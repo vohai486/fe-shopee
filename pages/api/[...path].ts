@@ -16,11 +16,8 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
-  console.log(API_URL);
-
   return new Promise<void>((resolve) => {
     const pathname = url.parse(req.url as string).pathname;
-    console.log(pathname);
     const cookies = new Cookies(req, res);
 
     const isLogin = pathname === "/api/login";
@@ -44,7 +41,6 @@ export default function handler(
         proxyRes.on("end", () => {
           try {
             // Extract the authToken from API's response:
-            console.log(body);
             const isSuccess =
               proxyRes.statusCode &&
               proxyRes.statusCode >= 200 &&
@@ -62,12 +58,10 @@ export default function handler(
                 user,
               },
             } = JSON.parse(body);
-            console.log("access", { accessToken, refreshToken });
             // convert token to cookies
             const cookies = new Cookies(req, res, {
               secure: process.env.NODE_ENV === "production",
             });
-            console.log(cookies);
             cookies.set("access_token", accessToken, {
               httpOnly: true,
               sameSite: "lax",
