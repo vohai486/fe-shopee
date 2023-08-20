@@ -16,8 +16,8 @@ export const authApi = {
     }>
   > {
     return axiosClient.post("/login", {
-      username: "string213",
-      password: "string",
+      username: "12312312312",
+      password: "st12312ring",
     });
   },
   logout(): Promise<SuccessResponseApi<null>> {
