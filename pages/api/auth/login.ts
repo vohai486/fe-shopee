@@ -9,7 +9,7 @@ export const config = {
   },
 };
 
-const API_URL = `https://js-post-api.herokuapp.com`;
+const API_URL = `https://ntd-backend-hotel.onrender.com`;
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
