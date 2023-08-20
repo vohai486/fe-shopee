@@ -9,7 +9,7 @@ export const config = {
   },
 };
 
-const API_URL = `https://ntd-backend-hotel.onrender.com`;
+const API_URL = `${process.env.API_URL}/v1`;
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>

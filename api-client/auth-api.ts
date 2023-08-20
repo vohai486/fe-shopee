@@ -15,10 +15,7 @@ export const authApi = {
       };
     }>
   > {
-    return axiosClient.post("/auth/login", {
-      email: "thanhdongfrontend@gmail.com",
-      password: "thanhdong8498",
-    });
+    return axiosClient.post("/auth/login", payload);
   },
   logout(): Promise<SuccessResponseApi<null>> {
     return axiosClient.post("/logout");
