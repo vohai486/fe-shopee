@@ -9,7 +9,7 @@ export const config = {
   },
 };
 
-const API_URL = `${process.env.API_URL}/v1`;
+const API_URL = `https://be-bookstore.onrender.com`;
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
@@ -20,12 +20,9 @@ export default function handler(
     });
   }
   return new Promise<void>((resolve) => {
-    // req.url = (req.url as string).replace(/^\/api/, "");
     req.headers.cookie = "";
 
     proxy.once("proxyRes", (proxyRes, req, res) => {
-      // Read the API's response body from
-      // the stream:
       let body = "";
       proxyRes.on("data", function (chunk) {
         body += chunk;
