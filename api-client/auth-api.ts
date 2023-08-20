@@ -15,7 +15,7 @@ export const authApi = {
       };
     }>
   > {
-    return axiosClient.post("/auth/login", payload);
+    return axiosClient.post("/login", payload);
   },
   logout(): Promise<SuccessResponseApi<null>> {
     return axiosClient.post("/logout");
