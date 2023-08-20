@@ -12,6 +12,10 @@ axiosClient.interceptors.request.use(
   function (config) {
     config.headers[Headers.CLIENT_ID] =
       localStorage.getItem(StorageKeys.USER_ID) || "";
+    config.headers[Headers.AUTHORIZATION] =
+      localStorage.getItem("access_token") || "";
+    config.headers[Headers.REFRESH_TOKEN] =
+      localStorage.getItem("refresh_token") || "";
     return config;
   },
   function (error: AxiosError) {

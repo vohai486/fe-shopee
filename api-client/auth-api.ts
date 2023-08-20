@@ -6,7 +6,15 @@ export const authApi = {
   signup(payload: SignupPayload): Promise<SuccessResponseApi<User>> {
     return axiosClient.post("/signup", payload);
   },
-  login(payload: LoginPayload): Promise<SuccessResponseApi<User>> {
+  login(payload: LoginPayload): Promise<
+    SuccessResponseApi<{
+      user: User;
+      tokens: {
+        accessToken: string;
+        refreshToken: string;
+      };
+    }>
+  > {
     return axiosClient.post("/login", payload);
   },
   logout(): Promise<SuccessResponseApi<null>> {

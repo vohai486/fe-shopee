@@ -16,15 +16,15 @@ export default function handler(
   res: NextApiResponse<any>
 ) {
   return new Promise<void>((resolve) => {
-    const cookies = new Cookies(req, res);
+    // const cookies = new Cookies(req, res);
 
-    const accessToken = cookies.get("access_token");
+    // const accessToken = cookies.get("access_token");
     // req.url = (req.url as string).replace(/^\/api/, "");
 
-    if (accessToken) {
-      req.headers[Headers.AUTHORIZATION] = accessToken;
-    }
-    req.headers.cookie = "";
+    // if (accessToken) {
+    //   req.headers[Headers.AUTHORIZATION] = accessToken;
+    // }
+    // req.headers.cookie = "";
 
     // convert cookies to header Authorization
     proxy.web(req, res, {
