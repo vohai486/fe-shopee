@@ -44,7 +44,7 @@ export default function handler(
               .json(JSON.parse(body));
             return resolve();
           }
-
+          console.log("body", body);
           const {
             metadata: {
               tokens: { accessToken, refreshToken },
