@@ -9,7 +9,7 @@ export const config = {
   },
 };
 
-const API_URL = `${process.env.API_URL}/v1`;
+const API_URL = `https://js-post-api.herokuapp.com`;
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
@@ -43,6 +43,7 @@ export default function handler(
               .json(JSON.parse(body));
             return resolve();
           }
+          console.log("body", body);
           const {
             metadata: {
               tokens: { accessToken, refreshToken },
