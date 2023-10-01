@@ -43,25 +43,26 @@ export function useAuth() {
 
       localStorage.removeItem(StorageKeys.USER_INFO);
       localStorage.removeItem(StorageKeys.USER_ID);
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
+      // localStorage.removeItem("access_token");
+      // localStorage.removeItem("refresh_token");
     },
   });
   const login = async (values: LoginPayload) => {
-    await mutationLogin.mutateAsync(values, {
+    mutationLogin.mutate(values, {
       onSuccess: async (data) => {
         toast.success("login successfully");
-        localStorage.setItem(StorageKeys.USER_ID, data.metadata.user._id);
-        localStorage.setItem("access_token", data.metadata.tokens.accessToken);
-        localStorage.setItem(
-          "refresh_token",
-          data.metadata.tokens.refreshToken
-        );
+        localStorage.setItem(StorageKeys.USER_ID, data.metadata._id);
+        // localStorage.setItem("access_token", data.metadata.tokens.accessToken);
+        // localStorage.setItem(
+        //   "refresh_token",
+        //   data.metadata.tokens.refreshToken
+        // );
 
         await refetch();
         router.push("/");
       },
       onError: (error) => {
+        mutationLogin.reset();
         const message = getErrorMessage(error);
         toast.error(message);
       },
@@ -70,5 +71,6 @@ export function useAuth() {
   const logout = async () => {
     mutationLogout.mutate();
   };
-  return { login, logout, profile, isFetching, isLoading };
+  const isLoadingLoginForm = mutationLogin.isLoading || false;
+  return { login, logout, profile, isFetching, isLoading, isLoadingLoginForm };
 }

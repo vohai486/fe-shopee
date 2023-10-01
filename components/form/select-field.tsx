@@ -6,14 +6,14 @@ export interface SelectFieldProps<T extends FieldValues>
   name: Path<T>;
   control: Control<T>;
   array: { label: string; value: string }[];
-  label: string;
+  showError?: boolean;
 }
 
 export function SelectField<T extends FieldValues>({
   name,
   control,
   array = [],
-  label = "Vui lòng chọn",
+  showError,
 }: SelectFieldProps<T>) {
   const {
     field: { onChange, onBlur, value, ref },
@@ -25,15 +25,12 @@ export function SelectField<T extends FieldValues>({
   return (
     <>
       <select
-        className={`w-full p-2 border bg-white border-gray3 outline-none rounded-sm focus:border-orange cursor-pointer ${
-          error && "border-red1"
-        }`}
+        className={`text-sm py-2 px-3 border
+        rounded-md   ${error && "error"}`}
         value={value}
         onChange={onChange}
       >
-        <option value="" disabled>
-          {label}
-        </option>
+        <option value="">Chọn</option>
         {array.length > 0 &&
           array.map((item) => (
             <option key={item.value} value={item.value}>
@@ -41,7 +38,9 @@ export function SelectField<T extends FieldValues>({
             </option>
           ))}
       </select>
-      <div className="h-5 text-red1">{error && error.message}</div>
+      {showError && (
+        <div className="h-5 text-red1">{error && error.message}</div>
+      )}
     </>
   );
 }

@@ -3,17 +3,24 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import * as yup from "yup";
-import { InputField, InputFile, InputNumberField } from "../../form";
+import {
+  InputField,
+  InputFile,
+  InputNumberField,
+  PhotoField,
+} from "../../form";
 import { QuillField } from "../../form/quill-editor";
 import { SelectField } from "../../form/select-field";
 import { Button } from "../../common/button";
-import { ModalPortal } from "@/components/common";
+import { Form, ModalPortal } from "@/components/common";
+import { Product } from "@/types";
 export interface FormProductProps {
-  onClose: () => void;
+  onCloseModal?: () => void;
+  product?: Product;
 }
 
 type FormData = {
@@ -25,71 +32,105 @@ type FormData = {
   product_quantity: number;
   product_category: string;
   product_brand: string;
-  product_specifications?: { key: string; value: string }[];
-  product_size?: Object;
+  product_specifications: { key: string; value: string }[];
+  product_size: Object;
   image: File | string;
+  thumbnail: null | {
+    file: File | null;
+    previewUrl: string;
+  };
 };
 
-const schema = yup.object().shape({
-  product_name: yup.string().required("Vui lòng nhập tên sản phẩm"),
-  product_description: yup
-    .string()
-    .required("Vui lòng nhập mô tả")
-    .min(
-      100,
-      "Mô tả sản phẩm của bạn quá ngắn. Vui lòng nhập ít nhất 100 kí tự"
-    ),
-  product_originalPrice: yup
-    .number()
-    .min(0, "lớn hơn 0")
-    .required("Vui lòng nhập giá bán"),
-  product_importPrice: yup
-    .number()
-    .min(0, "lớn hơn 0")
-    .required("Vui lòng nhập giá nhập"),
-  product_discount: yup
-    .number()
-    .min(0, "lớn hơn 0")
-    .required("Vui lòng nhập giảm giá"),
-  product_quantity: yup
-    .number()
-    .min(0, "lớn hơn 0")
-    .required("Vui lòng số lượng nhập"),
-  product_category: yup.string().required("Chọn danh mục sản phẩm"),
-  product_brand: yup.string().required("Vui lòng nhập tên sản phẩm"),
-  image: yup.mixed().test("isImageOrUrl", "Thêm hình ảnh", function (value) {
-    if (!value) return false;
-    if (typeof value === "string" && value.startsWith("http")) return true;
-    return value instanceof File && value.type.startsWith("image/");
-  }),
-});
-export function FormProduct({ onClose }: FormProductProps) {
+export function FormProduct({ onCloseModal, product }: FormProductProps) {
   const queryClient = useQueryClient();
   const { pathname, query } = useRouter();
-
-  const [file, setFile] = useState<File>();
+  const schema = yup.object().shape({
+    product_name: yup.string().required("Vui lòng nhập tên sản phẩm"),
+    product_description: yup.string().required("Vui lòng nhập mô tả"),
+    product_originalPrice: yup
+      .number()
+      .min(1, "Phải lớn hơn 0")
+      .required("Vui lòng nhập giá bán"),
+    // product_importPrice: yup
+    //   .number()
+    //   .min(1, "Phải lớn hơn 0")
+    //   .required("Vui lòng nhập giá nhập"),
+    product_discount: yup
+      .number()
+      .min(1, "Phải lớn hơn 0")
+      .required("Vui lòng nhập giảm giá"),
+    // product_quantity: yup
+    //   .number()
+    //   .min(1, "Phải lớn hơn 0")
+    //   .required("Vui lòng số lượng nhập"),
+    product_category: yup.string().required("Chọn danh mục sản phẩm"),
+    product_brand: yup.string().required("Vui lòng nhập tên sản phẩm"),
+    thumbnail: yup
+      .object()
+      .nullable()
+      .test(
+        "test-required",
+        "Vui lòng chọn hình ảnh",
+        (value: null | yup.AnyObject) => {
+          // required when add
+          if (Boolean(product?._id) || value?.file) return true;
+          // optional when edit
+          return false;
+          // return context.createError({
+          //   message: "Vui lòng chọn hình ảnh",
+          // });
+        }
+      )
+      .test("test-size", "Không quá 1MB", (value: null | yup.AnyObject) => {
+        const fileSize = value?.file?.["size"] || 0;
+        const MAX_SIZE = 1 * 1024 * 1024; //1MB
+        // limit size
+        return fileSize < MAX_SIZE;
+      }),
+  });
   const {
     control,
     handleSubmit,
     setError,
     register,
+    setValue,
     formState: { isSubmitting, errors },
-  } = useForm<FormData>({
+  } = useForm<Partial<FormData>>({
     defaultValues: {
       product_name: "",
       product_description: "",
-      product_category: "",
       product_brand: "",
-      image: "",
+      product_importPrice: 0,
+      product_originalPrice: 0,
+      product_discount: 0,
+      product_quantity: 0,
+      thumbnail: null,
+      product_category: product?.product_category?._id || "",
     },
     shouldFocusError: false,
     resolver: yupResolver(schema as any),
     mode: "onChange",
   });
-  const { fields, append, remove } = useFieldArray({
+  const { fields, replace, append, remove } = useFieldArray({
     control,
     name: "product_specifications",
   });
+  useEffect(() => {
+    if (!product?._id) return;
+    setValue("product_name", product.product_name);
+    setValue("product_description", product.product_description);
+    setValue("product_category", product.product_category._id);
+    setValue("product_brand", product.product_brand);
+    setValue("product_name", product.product_name);
+    setValue("product_discount", product.product_discount);
+    setValue("product_originalPrice", product.product_originalPrice);
+    setValue(
+      "thumbnail",
+      product?._id ? { file: null, previewUrl: product?.product_thumb } : null
+    );
+    replace(product.product_specifications || []);
+  }, [product, setValue, replace]);
+
   const { data } = useQuery({
     queryKey: ["category-shop"],
     queryFn: categoryApi.getAll,
@@ -106,195 +147,213 @@ export function FormProduct({ onClose }: FormProductProps) {
     onSuccess: () => {
       toast.success("Thêm sản phẩm thành công");
       queryClient.invalidateQueries(["product-shop", query]);
-      onClose();
+      onCloseModal?.();
     },
   });
-  const handleSubmitForm = async (values: FormData) => {
+  const mutationUpdate = useMutation({
+    mutationFn: productApi.updateProduct,
+    onSuccess: () => {
+      toast.success("Sửa sản phẩm thành công");
+      queryClient.invalidateQueries(["product-shop", query]);
+      onCloseModal?.();
+    },
+  });
+
+  const handleSubmitForm = async (values: Partial<FormData>) => {
     const formData = new FormData();
     Object.keys(values).forEach((key) => {
       if (key === "product_specifications") {
-        // @ts-ignore
-        formData.append(key, JSON.stringify(values[key]));
+        formData.set(key, JSON.stringify(values[key]));
+      } else if (key === "thumbnail") {
+        if (values.thumbnail?.file) {
+          formData.set("image", values.thumbnail?.file);
+        }
+      } else if (key === "product_category") {
+        if (product?.product_category._id !== values["product_category"]) {
+          formData.set(
+            "product_category",
+            values["product_category"] as string
+          );
+        }
       } else {
         // @ts-ignore
-        formData.append(key, values[key]);
+        if (product?.[key] !== values[key]) {
+          // @ts-ignore
+          formData.set(key, values[key] as string);
+        }
       }
     });
-    await mutationCreate.mutateAsync(formData);
+
+    if (Boolean(product?._id)) {
+      await mutationUpdate.mutateAsync({
+        data: formData,
+        id: product?._id as string,
+      });
+    } else {
+      await mutationCreate.mutateAsync(formData);
+    }
   };
-  const filePreview = useMemo(
-    () => (file ? URL.createObjectURL(file) : ""),
-    [file]
-  );
-  const handleChangeFile = (file: File) => {
-    setFile(file);
-  };
+
   return (
-    <ModalPortal>
-      <div className="w-[900px]  bg-white p-7 rounded-sm shadow-md  modal-content">
-        <div className="text-xl mb-4">Sản phẩm</div>
-        <form onSubmit={handleSubmit(handleSubmitForm)} className="relative">
-          <div className="grid grid-cols-4 gap-x-4 max-h-[500px] hidden-scroll overflow-auto  gap-y-6">
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Hình ảnh sản phẩm
-            </div>
-            <div className="col-span-3">
-              <InputFile
-                setError={setError}
-                control={control}
-                name="image"
-                handleChangeFile={handleChangeFile}
-                position="text-left"
+    <div className="h-full px-6">
+      <div className="text-xl mb-4">Sản phẩm</div>
+      <div className="overflow-y-auto hidden-scroll">
+        <Form
+          onSubmit={handleSubmit(handleSubmitForm)}
+          className="w-[800px] h-[500px]"
+        >
+          <Form.Row
+            label="Hình ảnh sản phẩm"
+            error={errors["image"]?.message || ""}
+          >
+            <PhotoField control={control} name="thumbnail" />
+          </Form.Row>
+          <Form.Row
+            label="Tên sản phẩm"
+            error={errors["product_name"]?.message || ""}
+          >
+            <InputField
+              showError={false}
+              control={control}
+              name="product_name"
+            />
+          </Form.Row>
+          <Form.Row
+            label="Chọn ngành hàng"
+            error={errors["product_category"]?.message || ""}
+          >
+            <SelectField
+              array={listCategory || []}
+              control={control}
+              name="product_category"
+              showError={false}
+            />
+          </Form.Row>
+          <Form.Row
+            label="Mô tả sản phẩm"
+            error={errors["product_description"]?.message || ""}
+          >
+            <QuillField
+              showError={false}
+              control={control}
+              name="product_description"
+            />
+          </Form.Row>
+          <Form.Row
+            label="Nhãn hàng"
+            error={errors["product_brand"]?.message || ""}
+          >
+            <InputField
+              showError={false}
+              name="product_brand"
+              control={control}
+            />
+          </Form.Row>
+          {!product && (
+            <>
+              {" "}
+              <Form.Row
+                label="Số lượng nhập"
+                error={errors["product_quantity"]?.message || ""}
               >
-                <div className="w-20 h-20 border border-gray4 border-dashed flex justify-center items-center">
-                  {!filePreview ? (
-                    <div className="flex flex-col items-center text-orange cursor-pointer">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        className="w-6 h-6 stroke-current"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                        />
-                      </svg>
-                      Thêm Hình
-                    </div>
-                  ) : (
-                    <Image
-                      width={80}
-                      height={80}
-                      src={filePreview || ""}
-                      alt=""
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                      }}
-                    ></Image>
-                  )}
-                </div>
-              </InputFile>
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Tên sản phẩm
-            </div>
-            <div className="col-span-3">
-              <InputField control={control} name="product_name" />
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Chọn ngành hàng
-            </div>
-            <div className="col-span-3">
-              <SelectField
-                array={listCategory || []}
-                control={control}
-                name="product_category"
-                label="Chọn danh mục"
-              />
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Mô tả sản phẩm
-            </div>
-            <div className="col-span-3">
-              <QuillField control={control} name="product_description" />
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Nhãn hàng
-            </div>
-            <div className="col-span-3">
-              <InputField name="product_brand" control={control} />
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Số lượng nhập
-            </div>
-            <div className="col-span-1 text-right">
-              <InputNumberField
-                placeholder="Số lượng nhập"
-                control={control}
-                name="product_quantity"
-              />
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Giá nhập
-            </div>
-            <div className="col-span-1 text-right">
-              <InputNumberField
-                placeholder="Giá nhập"
-                control={control}
-                name="product_importPrice"
-              />
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Giá bán
-            </div>
-            <div className="col-span-1 text-right">
-              <InputNumberField
-                placeholder="Giá bán"
-                control={control}
-                name="product_originalPrice"
-              />
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Giảm giá
-            </div>
-            <div className="col-span-1 text-right">
-              <InputNumberField
-                placeholder="Giá bán"
-                control={control}
-                name="product_discount"
-              />
-            </div>
-            <div className="col-span-1 text-right">
-              <span className="text-orange text-xs">*</span> Thông tin chi tiết
-              <div
-                onClick={() => append({ key: "", value: "" })}
-                className="ml-auto mt-5 cursor-pointer flex h-10 w-10 justify-center border border-gray3 items-center rounded-full"
+                <InputNumberField
+                  hideError={true}
+                  control={control}
+                  name="product_quantity"
+                  className="w-[50px] py-2 px-3 text-sm"
+                />
+              </Form.Row>
+              <Form.Row
+                label="Giá nhập"
+                error={errors["product_importPrice"]?.message || ""}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  className="w-5 h-5 stroke-orange"
+                <InputNumberField
+                  hideError={true}
+                  control={control}
+                  name="product_importPrice"
+                  className="w-[50px] py-2 px-3 text-sm"
+                />
+              </Form.Row>
+            </>
+          )}
+
+          <Form.Row
+            label="Giá bán"
+            error={errors["product_originalPrice"]?.message || ""}
+          >
+            <InputNumberField
+              hideError={true}
+              control={control}
+              name="product_originalPrice"
+              className="w-[50px] py-2 px-3 text-sm"
+            />
+          </Form.Row>
+          <Form.Row
+            label="Giảm giá"
+            error={errors["product_discount"]?.message || ""}
+          >
+            <InputNumberField
+              hideError={true}
+              control={control}
+              name="product_discount"
+              className="w-[50px] py-2 px-3 text-sm"
+            />
+          </Form.Row>
+          <Form.Row
+            label={
+              <div className="flex gap-2 items-center">
+                <span>Thông tin chi tiết</span>
+                <button
+                  onClick={() => append({ key: "", value: "" })}
+                  className="w-6 h-6 border border-blue-200 rounded-full flex justify-center items-center"
+                  type="button"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    className="w-5 h-5 stroke-blue-200"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                </button>
               </div>
-            </div>
-            <div className="col-span-3 flex flex-col gap-y-2 ">
+            }
+            columns="1fr 2fr 1fr"
+            error={""}
+            hiddenError={false}
+            position="items-start"
+          >
+            <div className="flex col-span-2 flex-col gap-y-2">
               {fields.map((item, index) => (
-                <div className="flex gap-x-5" key={item.id}>
+                <div className="flex gap-x-5 " key={item.id}>
                   <input
-                    type="text"
                     // value={item.key}
                     defaultValue={item.key}
                     {...register(`product_specifications.${index}.key`)}
-                    className="py-2 px-3 w-full rounded-md   h-full outline-none border border-gray3 focus:border-orange"
+                    className="py-2 px-3 w-full rounded-md"
                   />
                   <input
-                    type="text"
+                    // value={item.value}
                     defaultValue={item.value}
                     {...register(`product_specifications.${index}.value`)}
-                    className="py-2 px-3 rounded-md w-full   h-full outline-none border border-gray3 focus:border-orange"
+                    className="py-2 px-3 w-full rounded-md"
                   />
                   <div
                     onClick={() => remove(index)}
-                    className="shrink-0 cursor-pointer flex h-10 w-10 justify-center border border-gray3 items-center rounded-full"
+                    className="shrink-0 cursor-pointer flex items-center h-10 w-10 justify-center"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
-                      className="w-5 h-5 stroke-red1"
+                      className="w-5 h-5 stroke-red-100"
                     >
                       <path
                         strokeLinecap="round"
@@ -306,24 +365,23 @@ export function FormProduct({ onClose }: FormProductProps) {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="mt-5 text-right sticky bottom-0">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-white text-orange border border-gray3 rounded-sm h-10 w-20"
-            >
-              Đóng
-            </button>
+          </Form.Row>
+          <div className="flex pt-4 justify-end gap-2">
             <Button
-              isLoading={isSubmitting}
+              label="Trở về"
+              type="reset"
+              onClick={() => onCloseModal?.()}
+              className="px-3  h-10 border rounded-md border-box text-title"
+            />
+            <Button
               type="submit"
-              className="text-white bg-orange mx-3 rounded-sm w-[150px] h-10"
-              label="Thêm sản phẩm"
+              label={product ? "Sửa sản phẩm" : "Thêm sản phẩm"}
+              className="px-3 text-grey-0 rounded-md bg-blue-200 h-10 "
+              isLoading={mutationCreate.isLoading}
             />
           </div>
-        </form>
+        </Form>
       </div>
-    </ModalPortal>
+    </div>
   );
 }

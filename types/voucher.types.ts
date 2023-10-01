@@ -12,6 +12,10 @@ export interface Voucher {
   is_use: boolean;
   voucher_start_date: Date;
   voucher_max_uses_per_user: number;
+
+  codeRetentionTime: number;
+  numUsed: number;
+  status: "happenning" | "upcoming" | "finished";
 }
 
 export type VoucherPayload = Pick<

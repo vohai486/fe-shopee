@@ -1,5 +1,6 @@
 import React, { InputHTMLAttributes } from "react";
 import { Control, useController } from "react-hook-form";
+import { Checkbox } from "../common/checkbox";
 
 export interface RadioFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -24,29 +25,55 @@ export function RadioField({
     control,
   });
   return (
-    <div ref={ref} className={classParent}>
+    <div ref={ref} className={`${classParent} radio-wrapper `}>
       {arrayOptions.map((option) => (
-        <div key={option.value} className={classOption}>
+        <label key={option.value}>
+          <input
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange(e.target.value);
+            }}
+            checked={value.toString() === option.value.toString()}
+            type="radio"
+            value={option.value}
+            className={`input-radio focus:outline-none ${error && "error"}`}
+            name="pilih"
+          />{" "}
+          {option.label}
+        </label>
+      ))}
+      {error && <div className="text-red-100">{error.message}</div>}
+    </div>
+  );
+}
+// name="radio-5"
+{
+  /* <div key={option.value} className={classOption}>
           <input
             type="radio"
             value={option.value}
-            className="radio radio-success h-5 w-5"
+            className="radio radio-info h-5 w-5 "
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               onChange(e.target.value);
             }}
             checked={value.toString() === option.value.toString()}
           />
-          {/* <input
-            value={option.value}
-            checked={value.toString() === option.value.toString()}
-            type="radio"
-            className="w-4 h-4 accent-orange"
-            
-          /> */}
+
           <span>{option.label}</span>
-        </div>
-      ))}
-    </div>
-  );
+        </div> 
+        
+        // <div key={option.value} className="flex items-center gap-x-2">
+        //   <input
+        //     type="radio"
+        //     value={option.value}
+        //     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+        //       console.log(e.target.value);
+        //       onChange(e.target.value);
+        //     }}
+        //     className="w-5 h-5"
+        //     checked={value.toString() === option.value.toString()}
+        //   />
+        //   <label>{option.label}</label>
+        // </div>
+        
+        */
 }
-// name="radio-5"

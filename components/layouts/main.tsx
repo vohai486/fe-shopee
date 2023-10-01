@@ -1,7 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { Footer } from "../common";
 import { HeaderDesktop } from "../common/Header/header-desktop";
-import dynamic from "next/dynamic";
 import { LayoutWithChatBox } from "./layout-with-chatbox";
 
 export function MainLayout({ children }: { children: ReactNode }) {
@@ -9,7 +8,7 @@ export function MainLayout({ children }: { children: ReactNode }) {
     <LayoutWithChatBox>
       <div className="flex drawer flex-col min-h-[100vh]">
         <HeaderDesktop />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 container py-6 w-full">{children}</main>
         <Footer />
       </div>
     </LayoutWithChatBox>

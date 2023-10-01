@@ -47,8 +47,6 @@ const initialAppContext = {
 export const AppContext = createContext<AppContextInterface>(initialAppContext);
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const { profile } = useAuth();
-
   const [listItemCart, setListItemCart] = useState<ExtendCartItem[]>([]);
   const [listDiscount, setListDiscount] = useState<VoucherPayload[]>([]);
   const [showChatBox, setShowChatBox] = useState<boolean>(false);
@@ -56,15 +54,14 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     useState<SelectedConversation | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [listConversation, setListConversation] = useState<Conversation[]>([]);
+
   useEffect(() => {
-    if (!profile?._id) return;
-    const newSocket = io(process.env.API_URL as string);
+    const newSocket = io("http://localhost:8501");
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
     };
-  }, [profile]);
-
+  }, []);
   return (
     <AppContext.Provider
       value={{

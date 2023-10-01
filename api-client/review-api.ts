@@ -1,7 +1,7 @@
 import { SuccessResponseApi } from "@/types/common.types";
 import axiosClient from "./axios-client";
 import { ParsedUrlQuery } from "querystring";
-import { Address, ShopResponse } from "@/types";
+import { Address, Review, ShopResponse } from "@/types";
 
 export const reviewApi = {
   create(data: FormData): Promise<SuccessResponseApi<number>> {
@@ -10,5 +10,8 @@ export const reviewApi = {
         "Content-Type": "multipart/form-data",
       },
     });
+  },
+  getReviewByShop(): Promise<SuccessResponseApi<Review[]>> {
+    return axiosClient.get("/review/shop");
   },
 };

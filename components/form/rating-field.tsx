@@ -30,7 +30,11 @@ export function RatingField<T extends FieldValues>({
   };
   return (
     <div ref={ref}>
-      <p className={`text-center mb-3 ${error && "text-red1"} `}>
+      <p
+        className={`text-center  mb-3 ${
+          error ? "text-red-100 " : "text-title"
+        } `}
+      >
         {value === 0 && !error && "Vui lòng đánh giá"}
         {value === 1 && RATING.ONE}
         {value === 2 && RATING.TWO}
@@ -47,7 +51,7 @@ export function RatingField<T extends FieldValues>({
             <div
               key={idx}
               className={` cursor-pointer ${
-                idx + 1 > value ? "text-gray4" : "text-yellow"
+                idx + 1 > value ? "text-title" : "text-yellow-100"
               }`}
               onClick={() => handleSelectRating(+idx + 1)}
             >

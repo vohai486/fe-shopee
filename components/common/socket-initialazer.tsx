@@ -4,13 +4,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
 import { toast } from "react-toastify";
+import { io } from "socket.io-client";
 
 export function SocketInitializer() {
   const { pathname } = useRouter();
   const queryClient = useQueryClient();
   const { profile } = useAuth();
-  const { socket, selectedConversation, setSelectedConversation } =
+  const { socket, selectedConversation, setSocket, setSelectedConversation } =
     useContext(AppContext);
+
   useEffect(() => {
     if (profile?._id && socket) {
       socket.emit("join", profile._id);
@@ -28,9 +30,7 @@ export function SocketInitializer() {
       }
     });
     socket.on("conversation-last-view", (conversationId) => {
-      if (!socket) return;
       queryClient.invalidateQueries(["get-conversation"]);
-
       if (conversationId === selectedConversation?._id) {
         queryClient.invalidateQueries(["get-messages", conversationId]);
       }
@@ -77,6 +77,5 @@ export function SocketInitializer() {
     setSelectedConversation,
     socket,
   ]);
-  // Setup the Socket
   return <div></div>;
 }

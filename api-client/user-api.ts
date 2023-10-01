@@ -1,6 +1,7 @@
 import { SuccessResponseApi } from "@/types/common.types";
 import axiosClient from "./axios-client";
-import { Address, User } from "@/types";
+import { Address, Pagination, User } from "@/types";
+import { ParsedUrlQuery } from "querystring";
 
 export const userApi = {
   getProfile(): Promise<SuccessResponseApi<User>> {
@@ -51,5 +52,16 @@ export const userApi = {
   },
   checkAdmin(): Promise<SuccessResponseApi<{ id: string }>> {
     return axiosClient.post("/user/check-admin");
+  },
+  getAll(
+    params: ParsedUrlQuery
+  ): Promise<SuccessResponseApi<{ users: User[]; pagination: Pagination }>> {
+    return axiosClient.get("/user", { params });
+  },
+  activeUser(id: string): Promise<number> {
+    return axiosClient.post(`/user/active/${id}`);
+  },
+  inAcctiveUser(id: string): Promise<number> {
+    return axiosClient.post(`/user/in-active/${id}`);
   },
 };

@@ -64,9 +64,11 @@ export default function SignupPage() {
       <div className="w400:flex justify-center items-center">
         <form
           onSubmit={handleSubmit(handleSignupForm)}
-          className="w400:w-[400px] rounded-sm shadow-md bg-white"
+          className="w400:w-[400px] rounded-md border-box bg-box shadow-sm-50"
         >
-          <div className="py-5 px-7 text-xl text-center">Đăng Ký</div>
+          <div className="py-5 px-7 text-xl text-center text-blue-300 dark:text-grey-0">
+            Đăng Ký
+          </div>
           <div className="w400:px-7 px-3 pb-5 flex flex-col gap-y-2">
             <InputField placeholder="Email" name="email" control={control} />
             <div className="flex flex-col w400:flex-row gap-x-3 gap-y-2">
@@ -87,8 +89,8 @@ export default function SignupPage() {
             />
             <Button isLoading={isSubmitting} label="Đăng ký" />
             <div className="text-sm mt-3 flex justify-center gap-2">
-              <span className="text-gray2">Đã có tài khoản?</span>
-              <Link href="/login" className="text-orange">
+              <span>Đã có tài khoản?</span>
+              <Link href="/login" className="text-blue-200">
                 Đăng nhập
               </Link>
             </div>

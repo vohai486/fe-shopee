@@ -15,9 +15,9 @@ export function TextareaField<T extends FieldValues>({
   onChange: externalOnChange,
   onBlur: externalOnBlur,
   value: externalValue,
-  className = "px-3 py-2 w-full  outline-none border border-gray3 rounded-sm focus:border-orange",
+  className = "px-3 py-2 w-full text-sm rounded-md",
   classParent = "w-full",
-  classTextError = "text-sm text-red1 min-h-[20px]",
+  classTextError = "text-sm text-red-100 min-h-[20px]",
   ...rest
 }: InputFieldProps<T>) {
   const {
@@ -38,7 +38,7 @@ export function TextareaField<T extends FieldValues>({
           onChange(e);
           externalOnChange && externalOnChange(e);
         }}
-        className={` bg-white ${className} ${error && "border-red1 "}`}
+        className={`${className} ${error && "error"}`}
         style={{
           resize: "none",
         }}

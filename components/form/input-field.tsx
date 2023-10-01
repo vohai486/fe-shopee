@@ -6,6 +6,7 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   control: Control<any>;
   classParent?: string;
   classTextError?: string;
+  showError?: boolean;
 }
 
 export function InputField({
@@ -14,10 +15,11 @@ export function InputField({
   onChange: externalOnChange,
   onBlur: externalOnBlur,
   value: externalValue,
-  className = "px-3 py-2 w-full outline-none border border-gray3 rounded-sm focus:border-orange",
+  className = "px-3 py-2 rounded-md text-sm",
   type = "text",
   classParent = "",
   classTextError = "min-h-[20px]",
+  showError = true,
   ...rest
 }: InputFieldProps) {
   const {
@@ -37,12 +39,16 @@ export function InputField({
         value={value}
         ref={ref}
         onChange={onChange}
-        className={`bg-white ${className} ${error && "border-red1"}`}
+        className={`${className} ${error && "error"}`}
         {...rest}
       ></input>
-      <div className={`text-xs sm:text-sm text-red1 ${classTextError}`}>
-        {error && error.message}
-      </div>
+      {showError && (
+        <div
+          className={`text-xs sm:text-sm text-red-100 dark:red-100 ${classTextError}`}
+        >
+          {error && error.message}
+        </div>
+      )}
     </div>
   );
 }

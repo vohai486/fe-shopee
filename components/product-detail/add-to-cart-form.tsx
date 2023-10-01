@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { InputNumberField } from "../form/input-number-field";
 import Link from "next/link";
-import { QuantityField } from "../form";
+import { QuantityField } from "./quantity-field";
 export interface IAddToCartFromProps {}
 
 interface QuantityPayload {
@@ -54,7 +54,7 @@ export function AddToCartFrom({
 
   return (
     <form onSubmit={handleSubmit(handleOnSubmit)}>
-      <div className="flex flex-col sm:flex-row text-gray4 gap-y-2 sm:items-center gap-x-3">
+      <div className="flex flex-col sm:flex-row  gap-y-2 sm:items-center gap-x-3">
         <div>Số Lượng</div>
         <QuantityField
           name="qty"
@@ -63,10 +63,10 @@ export function AddToCartFrom({
           handleIncrement={handleIncrement}
           handleChange={handleChange}
         />
-        <span>{quantity > 0 && `${quantity} sản phẩm có sẵn`} </span>
+        <span>{quantity > 0 && `có sẵn ${quantity}`} </span>
       </div>
-      <div className="mt-8 ">
-        <button className="flex text-base font-medium items-center gap-x-2 hover:bg-orange/5 text-orange h-12 px-4 border border-orange bg-orange/10">
+      <div className="mt-5">
+        <button className="flex text-base font-medium items-center gap-x-2  bg-blue-200 h-12 px-4 text-grey-0 rounded-md ">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

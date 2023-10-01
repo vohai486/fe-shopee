@@ -50,8 +50,8 @@ export function ListPhotoField({ name, control, errors }: ListPhotoFieldProps) {
           return !!item?.previewUrl ? (
             <div
               key={item.id}
-              className={`w-12 h-12 overflow-hidden rounded-md group relative cursor-pointer border-2 border-gray4 ${
-                error && "border-red1"
+              className={`w-12 h-12 overflow-hidden rounded-md group relative cursor-pointer border-2 border-box ${
+                error && "border-red-100 dark:border-red-100"
               }`}
             >
               <Image
@@ -85,14 +85,14 @@ export function ListPhotoField({ name, control, errors }: ListPhotoFieldProps) {
         })}
         <div
           onClick={handleClick}
-          className="w-12 cursor-pointer h-12 border flex items-center justify-center border-gray4 border-dashed"
+          className="w-12 cursor-pointer h-12 border flex items-center justify-center border-box border-dashed"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
-            className="w-7 h-7 stroke-orange"
+            className="w-7 h-7 stroke-blue-200"
           >
             <path
               strokeLinecap="round"
@@ -110,7 +110,7 @@ export function ListPhotoField({ name, control, errors }: ListPhotoFieldProps) {
           accept="image/*"
         />
       </div>
-      <div className="text-red1 h-5">
+      <div className="text-red-100 h-5">
         {!!errors.images && Array.isArray(errors.images)
           ? errors.images.filter((error) => error)[0]?.file?.message
           : errors.images?.message}

@@ -10,7 +10,7 @@ export function ProtectedLayout({ children }: { children: ReactNode }) {
       <LayoutWithChatBox>
         <div className="flex flex-col min-h-[100vh]">
           <HeaderDesktop />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 container py-6">{children}</main>
           <Footer />
         </div>
       </LayoutWithChatBox>

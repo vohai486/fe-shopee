@@ -13,7 +13,7 @@ const optionsSidebar = [
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-5 h-5 stroke-blue"
+        className="w-5 h-5"
       >
         <path
           strokeLinecap="round"
@@ -33,7 +33,7 @@ const optionsSidebar = [
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-5 stroke-blue h-5"
+        className="w-5 h-5"
       >
         <path
           strokeLinecap="round"
@@ -58,7 +58,7 @@ const optionsSidebar = [
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-5 stroke-blue h-5"
+        className="w-5 h-5"
       >
         <path
           strokeLinecap="round"
@@ -78,7 +78,7 @@ const optionsSidebar = [
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-5 stroke-blue h-5"
+        className="w-5 h-5"
       >
         <path
           strokeLinecap="round"
@@ -96,8 +96,8 @@ export function Sidebar() {
   const { profile } = useAuth();
   return (
     <div className="flex flex-col  justify-between">
-      <div className="py-4 shrink-0 border-b border-gray1 flex items-center gap-x-2">
-        <div className="w-12 h-12 shrink-0 rounded-full border overflow-hidden border-gray3 bg-gray flex items-center justify-center">
+      <div className="py-4 shrink-0 border-b border-box flex items-center gap-x-2">
+        <div className="w-12 h-12 shrink-0 rounded-full border overflow-hidden border-box bg-box bg-grey-700 flex items-center justify-center">
           {profile?.avatar ? (
             <Image
               width={200}
@@ -115,7 +115,7 @@ export function Sidebar() {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-7 h-7 stroke-gray4"
+              className="w-7 h-7 dark:stroke-grey-0-dark"
             >
               <path
                 strokeLinecap="round"
@@ -130,13 +130,15 @@ export function Sidebar() {
           <div className="font-bold">{profile?.fullName}</div>
         </div>
       </div>
-      <div className="flex flex-col py-3 cursor-pointer mt-5 mb-5 custom-scrollbar  ">
+      <div className="flex flex-col cursor-pointer mt-3 custom-scrollbar  ">
         {optionsSidebar.map((option) => (
           <Link
             href={option.href}
             key={option.label}
             className={`py-2 min-w-[160px]  justify-normal flex items-center  gap-x-3  ${
-              router.pathname === option.href && "text-orange font-medium"
+              router.pathname === option.href
+                ? "text-blue-200 font-semibold"
+                : "text-blue-50"
             }`}
           >
             {option.icon}

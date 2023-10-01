@@ -16,9 +16,9 @@ export function Product({ product }: ProductProps) {
         name: product.product_name,
         id: product._id,
       })}`}
-      className="px-1.5"
+      className="w400:px-1.5"
     >
-      <div className="overflow-hidden h-full rounded-sm bg-white hover:-translate-y-[0.0625rem] hover:shadow-md transition-transform">
+      <div className="overflow-hidden p-2 rounded-md bg-box border border-box h-full flex flex-col   hover:-translate-y-[0.0625rem] hover:shadow-sm-50 transition-transform">
         <div className="w-full pt-[100%] relative">
           <Image
             alt={product.product_name}
@@ -36,21 +36,26 @@ export function Product({ product }: ProductProps) {
             src={product.product_thumb}
           ></Image>
         </div>
-        <div className="p-2">
-          <div className="line-clamp-2 text-xs min-h-[2rem]">
-            {product.product_name}
-          </div>
-          <div className="mt-3 flex items-center gap-x-1 flex-wrap">
-            {product.product_discount > 0 && (
-              <div className="text-gray2 text-sm line-through ">
-                <span> {formatPriceVND(product.product_originalPrice)}</span>
-              </div>
-            )}
-            <div className="text-red  ">
-              <span>{formatPriceVND(product.product_price)}</span>
+        <div className="pt-2 flex flex-col  grow gap-y-1">
+          <div className="grow-1 h-full">
+            <h3 className="line-clamp-2 text-blue-300 dark:text-grey-0 text-sm min-h-[2rem]">
+              {product.product_name}
+            </h3>
+            <div className="flex mt-1 gap-x-2 items-center">
+              <p className=" dark:text-grey-300 font-medium ">
+                {formatPriceVND(product.product_price)}
+              </p>
+              {product.product_discount > 0 && (
+                <div className="p-1 rounded-md bg-blue-200 text-grey-0 text-center text-xs text-brand-50">
+                  -{product.product_discount}%
+                </div>
+              )}
             </div>
+            <p className="text-blue-100 mt-1  text-sm line-through ">
+              {formatPriceVND(product.product_originalPrice)}
+            </p>
           </div>
-          <div className="mt-3 text-xs flex items-center">
+          <div className="shrink-0 text-xs flex items-center">
             {product.product_ratingsAverage > 0 && (
               <div className="flex items-center">
                 {product.product_ratingsAverage}
@@ -59,8 +64,7 @@ export function Product({ product }: ProductProps) {
                   viewBox="0 0 15 15"
                   x={0}
                   y={0}
-                  fill="#ffce3d"
-                  className="h-3 w-3"
+                  className="h-3 w-3 fill-yellow-100"
                 >
                   <polygon
                     points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4"

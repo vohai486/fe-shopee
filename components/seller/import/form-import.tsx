@@ -2,12 +2,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { InputNumberField } from "../../form";
-import { ModalPortal } from "@/components/common";
+import { Button, Form } from "@/components/common";
 
 export interface FormImportProductProps {
-  onClose: () => void;
-  idSelect: string;
   handleImport: (quantity: number, price: number) => void;
+  onCloseModal?: () => void;
+  isLoading: boolean;
 }
 const schema = yup.object().shape({
   price: yup.number().min(1, "lớn hơn 0").required("Vui lòng nhập giá nhập"),
@@ -19,19 +19,21 @@ type FormData = {
 };
 
 export function FormImportProduct({
-  onClose,
-  idSelect,
   handleImport,
+  onCloseModal,
+  isLoading,
 }: FormImportProductProps) {
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    reset,
+    formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
       price: 0,
       quantity: 0,
     },
+    shouldFocusError: false,
     resolver: yupResolver(schema),
     mode: "onChange",
   });
@@ -39,41 +41,48 @@ export function FormImportProduct({
   const handleSubmitForm = async (values: FormData) => {
     const { quantity, price } = values;
     await handleImport(quantity, price);
-    onClose();
+    onCloseModal?.();
   };
   return (
-    <ModalPortal>
-      <div className="w-[250px]  bg-white p-5 rounded-sm shadow-md  modal-content">
-        <form
-          onSubmit={handleSubmit(handleSubmitForm)}
-          className="grid grid-cols-2 gap-x-2 gap-y-4"
+    <div className=" px-6">
+      <div className="text-xl mb-4 text-title">Nhập hàng</div>
+      <Form onSubmit={handleSubmit(handleSubmitForm)} className="w-[360px]">
+        <Form.Row
+          label="Số lượng nhập"
+          error={errors["quantity"]?.message || ""}
+          columns="1fr 1fr 1fr"
         >
-          <div className="col-span-1">Số lượng nhập</div>
-          <div className="col-span-1">Giá nhập</div>
-          <div className="col-span-1">
-            <InputNumberField
-              hideError={true}
-              control={control}
-              name="quantity"
-            />
-          </div>
-          <div className="col-span-1">
-            <InputNumberField hideError={true} control={control} name="price" />
-          </div>
-          <div className="col-span-2 flex">
-            <button
-              onClick={onClose}
-              type="button"
-              className=" text-orange bg-white w-full h-8"
-            >
-              Trở lại
-            </button>
-            <button type="submit" className=" text-white bg-orange w-full h-8">
-              Lưu
-            </button>
-          </div>
-        </form>
-      </div>
-    </ModalPortal>
+          <InputNumberField
+            hideError={true}
+            control={control}
+            name="quantity"
+          />
+        </Form.Row>
+        <Form.Row
+          columns="1fr 1fr 1fr"
+          label="Giá nhập"
+          error={errors["price"]?.message || ""}
+        >
+          <InputNumberField hideError={true} control={control} name="price" />
+        </Form.Row>
+        <div className="flex pt-4 justify-end gap-2">
+          <Button
+            type="reset"
+            label="Trở lại"
+            onClick={() => {
+              reset();
+              onCloseModal?.();
+            }}
+            className="px-3  h-10 border rounded-md border-box text-title"
+          ></Button>
+          <Button
+            isLoading={isLoading}
+            label="Nhập hàng"
+            type="submit"
+            className="px-3 text-grey-0 rounded-md bg-blue-200 h-10 "
+          ></Button>
+        </div>
+      </Form>
+    </div>
   );
 }

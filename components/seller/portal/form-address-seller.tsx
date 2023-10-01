@@ -61,7 +61,7 @@ export function FormAddressSeller({ onClose, onSetValue }: FormAddressProps) {
   };
   return (
     <ModalPortal>
-      <div className="w-[500px] bg-white p-7 rounded-sm shadow-md  modal-content">
+      <div className="w-[500px] bg-box border border-box p-7 rounded-sm shadow-md  modal-content">
         <div className="text-xl mb-4">Địa chỉ gửi hàng</div>
         <form onSubmit={handleSubmit(handleSubmitForm)}>
           <div className="flex gap-x-2 mb-6">
@@ -92,6 +92,9 @@ export function FormAddressSeller({ onClose, onSetValue }: FormAddressProps) {
                 !!errors["codeWard"] ||
                 !!errors["codeDistrict"]
               }
+              city=""
+              district=""
+              ward=""
             />
           </div>
           <div className="mb-6">

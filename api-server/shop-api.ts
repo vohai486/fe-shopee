@@ -1,15 +1,13 @@
-import { ShopResponse } from "@/types";
+import { Pagination, Shop, ShopResponse } from "@/types";
 import { SuccessResponseApi } from "@/types/common.types";
 import axiosServer from "./axios-server";
 
 export const shopApi = {
   getAll(): Promise<
-    SuccessResponseApi<
-      {
-        shop_name: string;
-        _id: string;
-      }[]
-    >
+    SuccessResponseApi<{
+      shops: Shop[];
+      pagination: Pagination;
+    }>
   > {
     return axiosServer.get("/shop");
   },

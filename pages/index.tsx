@@ -17,6 +17,23 @@ import {
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
+export const getStaticProps = async () => {
+  const queryClient = new QueryClient();
+  const queryClientCate = new QueryClient();
+  queryClient.prefetchQuery({
+    queryKey: ["products", {}],
+    queryFn: () => {
+      return productServer.getAll({});
+    },
+  });
+  queryClientCate.prefetchQuery(["category"], categoryServer.getAll);
+  return {
+    props: {
+      initialProducts: dehydrate(queryClient),
+      initialCategory: dehydrate(queryClientCate),
+    },
+  };
+};
 export default function Home() {
   const controller = new AbortController();
   const { query, pathname, push, isReady } = useRouter();
@@ -38,6 +55,7 @@ export default function Home() {
     staleTime: 60 * 60 * 1000,
     enabled: isReady,
   });
+
   const handleRemoveFilters = () => {
     push({
       pathname,
@@ -52,7 +70,7 @@ export default function Home() {
   }
 
   return (
-    <div className="py-6 ">
+    <div>
       <Seo
         data={{
           title: "Mua sắm online",
@@ -64,9 +82,9 @@ export default function Home() {
       />
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
-      <div className="container drawer-content xl:px-0">
-        <div className="flex">
-          <div className="  w-[190px]   shrink-0 transition-all   lg:translate-x-0    p-0 hidden  lg:block col-span-2 lg:mr-2.5">
+      <div className="drawer-content">
+        <div className="flex gap-x-2">
+          <aside className="w-[200px] border border-box text-blue-50  py-1 px-2 rounded-md bg-box self-start shrink-0 hidden lg:block">
             <AsideFilter
               listCategory={(categoryData && categoryData.metadata) || []}
               query={query}
@@ -74,11 +92,11 @@ export default function Home() {
             />
             <button
               onClick={handleRemoveFilters}
-              className="w-full h-8 opacity-90 mt-5 bg-orange text-white text-sm rounded-sm"
+              className="w-full h-8 btn-red-200 mt-3 rounded-md"
             >
               Xóa Tất cả
             </button>
-          </div>
+          </aside>
           <div className="grow">
             <div className="lg:block hidden">
               {productData?.metadata && (
@@ -92,7 +110,7 @@ export default function Home() {
             {/* {isFetching ? (
               <div></div>
             ) : ( */}
-            <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-y-2">
+            <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 w400:gap-x-0 gap-x-1.5 md:grid-cols-5 gap-y-2">
               {productData?.metadata &&
                 productData.metadata.products.map((product) => (
                   <Product product={product} key={product._id} />
@@ -103,8 +121,8 @@ export default function Home() {
         </div>
       </div>
       <div className="drawer-side lg:hidden">
-        <label htmlFor="my-drawer" className="drawer-overlay"></label>
-        <div className="bg-white   h-full w-[250px] p-3">
+        <label htmlFor="my-drawer" className="drawer-overlay "></label>
+        <div className="h-full text-blue-50 w-[250px] p-3 bg-box">
           <AsideFilter
             nameRating="rating-1"
             listCategory={(categoryData && categoryData.metadata) || []}
@@ -121,7 +139,7 @@ export default function Home() {
           </div>
           <button
             onClick={handleRemoveFilters}
-            className="w-full h-8 opacity-90 mt-5 bg-orange text-white text-sm rounded-sm"
+            className="w-full h-8 btn-red-200 mt-3 text-sm rounded-md"
           >
             Xóa Tất cả
           </button>
@@ -129,25 +147,6 @@ export default function Home() {
       </div>
     </div>
   );
-}
-
-export async function getStaticProps() {
-  const queryClient = new QueryClient();
-  const queryClientCate = new QueryClient();
-  queryClient.prefetchQuery({
-    queryKey: ["products", {}],
-    queryFn: () => {
-      return productServer.getAll({});
-    },
-    staleTime: 60 * 60 * 1000,
-  });
-  queryClientCate.prefetchQuery(["category"], categoryServer.getAll);
-  return {
-    props: {
-      initialProducts: dehydrate(queryClient),
-      initialCategory: dehydrate(queryClientCate),
-    },
-  };
 }
 
 Home.Layout = MainLayout;

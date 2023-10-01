@@ -1,18 +1,16 @@
+import { userApi } from "@/api-client";
+import { Address } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { CheckboxField, InputField, RadioField } from "../../form";
 import { AddressField } from "../../form/address-field";
 import { TextareaField } from "../../form/textarea-field";
-import { Address } from "@/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { userApi } from "@/api-client";
-import { ModalPortal } from "../../common/modal-portal";
 export interface FormAddressProps {
-  onClose: () => void;
-  address: Address;
+  onCloseModal?: () => void;
+  address?: Address;
 }
 const schema = yup.object().shape({
   fullName: yup.string().required("Vui lòng nhập Họ và tên"),
@@ -30,7 +28,7 @@ const schema = yup.object().shape({
   codeWard: yup.number().min(0).required(),
 });
 type FormData = Omit<Address, "_id">;
-export function FormAddressUser({ onClose, address }: FormAddressProps) {
+export function FormAddressUser({ onCloseModal, address }: FormAddressProps) {
   const queryClient = useQueryClient();
 
   const {
@@ -55,6 +53,7 @@ export function FormAddressUser({ onClose, address }: FormAddressProps) {
     },
     resolver: yupResolver(schema),
     mode: "onChange",
+    shouldFocusError: false,
   });
 
   useEffect(() => {
@@ -92,7 +91,7 @@ export function FormAddressUser({ onClose, address }: FormAddressProps) {
         data: values,
       });
     }
-    onClose();
+    onCloseModal?.();
   };
   const setValueForm = (name: string, value: string | boolean | number) => {
     setValue(name as keyof FormData, value);
@@ -101,85 +100,89 @@ export function FormAddressUser({ onClose, address }: FormAddressProps) {
     return getValues(name as keyof FormData);
   };
   return (
-    <ModalPortal>
-      <div className="sm:w-[500px] w-full bg-white p-3 sm:p-7 rounded-sm shadow-md  modal-content">
-        <div className="text-xl font-medium mb-4">Địa chỉ mới</div>
-        <form onSubmit={handleSubmit(handleSubmitForm)}>
-          <div className="flex sm:flex-row flex-col gap-x-2 mb-6">
-            <InputField
-              control={control}
-              classParent="w-full sm:mb-0 mb-6"
-              classTextError="h-[unset] text-red"
-              name="fullName"
-              placeholder="Họ và tên"
-            />
-            <InputField
-              control={control}
-              classParent="w-full"
-              classTextError="h-[unset] text-red"
-              name="phoneNumber"
-              placeholder="Số điện thoại"
-            />
-          </div>
-          <div className="mb-6">
-            <AddressField
-              setValueForm={setValueForm}
-              getValueForm={getValueForm}
-              error={
-                !!errors["city"] ||
-                !!errors["district"] ||
-                !!errors["ward"] ||
-                !!errors["codeCity"] ||
-                !!errors["codeDistrict"] ||
-                !!errors["codeWard"]
-              }
-            />
-          </div>
-          <div className="mb-6">
-            <TextareaField
-              placeholder="Địa chỉ cụ thể"
-              control={control}
-              name="street"
-              classTextError="h-[unset] text-red"
-            />
-          </div>
-          <div className="mb-6">
-            <RadioField
-              arrayOptions={[
-                {
-                  label: "Nhà Riêng",
-                  value: "house",
-                },
-                {
-                  label: "Văn Phòng",
-                  value: "office",
-                },
-              ]}
-              name="type"
-              control={control}
-            />
-          </div>
-          <div>
-            <CheckboxField
-              label="Đặt làm mặc định"
-              name="default"
-              control={control}
-            />
-          </div>
-          <div className="py-3 sm:py-5 flex justify-end gap-x-3">
-            <button
-              onClick={onClose}
-              type="button"
-              className="py-2 text-gray2 w-28 hover:bg-gray1"
-            >
-              Trở Lại
-            </button>
-            <button type="submit" className="py-2 w-28 bg-orange text-white">
-              Hoàn thành
-            </button>
-          </div>
-        </form>
-      </div>
-    </ModalPortal>
+    <div className="sm:w-[500px] px-4 sm:px-10 w400:w-[400px] w-[320px]">
+      <div className="text-xl font-medium mb-4">Địa chỉ mới</div>
+      <form onSubmit={handleSubmit(handleSubmitForm)}>
+        <div className="flex sm:flex-row flex-col gap-x-2 mb-6">
+          <InputField
+            control={control}
+            classParent="w-full sm:mb-0 mb-6"
+            classTextError="h-[unset] text-red"
+            name="fullName"
+            placeholder="Họ và tên"
+          />
+          <InputField
+            control={control}
+            classParent="w-full"
+            classTextError="h-[unset] text-red"
+            name="phoneNumber"
+            placeholder="Số điện thoại"
+          />
+        </div>
+        <div className="mb-6">
+          <AddressField
+            city={address?.city || ""}
+            district={address?.district || ""}
+            ward={address?.ward || ""}
+            setValueForm={setValueForm}
+            getValueForm={getValueForm}
+            error={
+              !!errors["city"] ||
+              !!errors["district"] ||
+              !!errors["ward"] ||
+              !!errors["codeCity"] ||
+              !!errors["codeDistrict"] ||
+              !!errors["codeWard"]
+            }
+          />
+        </div>
+        <div className="mb-6">
+          <TextareaField
+            placeholder="Địa chỉ cụ thể"
+            control={control}
+            name="street"
+            classTextError="h-[unset] text-red-100 text-sm"
+          />
+        </div>
+        <div className="mb-6">
+          <RadioField
+            arrayOptions={[
+              {
+                label: "Nhà Riêng",
+                value: "house",
+              },
+              {
+                label: "Văn Phòng",
+                value: "office",
+              },
+            ]}
+            name="type"
+            control={control}
+          />
+        </div>
+        <div>
+          <CheckboxField
+            label="Đặt làm mặc định"
+            name="default"
+            control={control}
+          />
+        </div>
+        <div className="py-3 sm:py-5 flex justify-end gap-x-3">
+          <button
+            onClick={() => onCloseModal?.()}
+            type="reset"
+            className="py-2 border border-box rounded-md text-title w-28 hover:bg-gray1"
+          >
+            Trở Lại
+          </button>
+          <button
+            type="submit"
+            className="py-2 w-28 rounded-md bg-blue-200 text-grey-0"
+          >
+            Hoàn thành
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

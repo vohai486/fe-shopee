@@ -11,7 +11,7 @@ export interface IButtonChatShopProps {
 export function ButtonChatShop({
   conversation,
   label,
-  className = "text-orange gap-x-2 font-medium hover:bg-orange/5 flex items-center border border-orange bg-orange/10 py-1 px-2 rounded-sm",
+  className = "text-grey-0 gap-x-2 font-medium flex items-center border border-transparent bg-blue-200 py-1 px-2 rounded-sm",
 }: IButtonChatShopProps) {
   const { setSelectedConversation, setShowChatBox } = useContext(AppContext);
   const handleMessageNow = () => {

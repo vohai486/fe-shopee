@@ -15,15 +15,7 @@ export const voucherApi = {
   },
   getVoucherForShop(params: ParsedUrlQuery): Promise<
     SuccessResponseApi<{
-      data: {
-        codeRetentionTime: number;
-        numUsed: number;
-        status: "happenning" | "upcoming" | "finished";
-        voucher_max_uses: number;
-        voucher_name: string;
-        voucher_value: number;
-        _id: string;
-      }[];
+      data: Voucher[];
       pagination: Pagination;
     }>
   > {

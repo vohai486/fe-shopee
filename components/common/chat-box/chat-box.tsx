@@ -59,8 +59,8 @@ export function ChatBox({ onClose }: AppProps) {
   };
 
   return (
-    <div className="border border-gray3 rounded-sm shadow-2xl w-full  bg-white">
-      <div className="flex justify-between border-gray1 border-b  py-2 px-3">
+    <div className="border rounded-sm shadow-2xl w-full  bg-box border-box">
+      <div className="flex justify-between border-box border-b  py-2 px-3">
         <div className="sm:hidden">
           {type === "message" && (
             <button onClick={() => setType("conversation")}>
@@ -69,7 +69,7 @@ export function ChatBox({ onClose }: AppProps) {
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
-                className="w-4 h-4 stroke-gray2 border border-gray2"
+                className="w-4 h-4 border border-box stroke-grey-300"
               >
                 <path
                   strokeLinecap="round"
@@ -80,7 +80,7 @@ export function ChatBox({ onClose }: AppProps) {
             </button>
           )}
         </div>
-        <div className="font-bold text-orange">Chat</div>
+        <div className="font-bold text-blue-200">Chat</div>
         <div className="sm:flex  gap-x-2">
           <button
             className="hidden sm:block"
@@ -92,7 +92,7 @@ export function ChatBox({ onClose }: AppProps) {
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
-                className="w-4 h-4 stroke-gray2 border border-gray2"
+                className="w-4 h-4 border border-box stroke-grey-300"
               >
                 <path
                   strokeLinecap="round"
@@ -106,7 +106,7 @@ export function ChatBox({ onClose }: AppProps) {
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
-                className="w-4 h-4 stroke-gray2 border border-gray2"
+                className="w-4 h-4 border border-box stroke-grey-300"
               >
                 <path
                   strokeLinecap="round"
@@ -122,7 +122,7 @@ export function ChatBox({ onClose }: AppProps) {
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
-              className="w-4 h-4 stroke-gray2 border border-gray2"
+              className="w-4 h-4 border border-box stroke-grey-300"
             >
               <path
                 strokeLinecap="round"
@@ -134,7 +134,7 @@ export function ChatBox({ onClose }: AppProps) {
         </div>
       </div>
       <div className="sm:flex hidden  h-[460px]">
-        <div className="md:w-[230px] w-2[200px]  shrink-0 border-r border-gray1 h-full overflow-y-auto custom-scrollbar">
+        <div className="md:w-[230px] w-2[200px]  shrink-0 border-r border-box h-full overflow-y-auto custom-scrollbar">
           {
             <SidebarConversation
               listConversation={listConversation}
@@ -149,7 +149,7 @@ export function ChatBox({ onClose }: AppProps) {
         >
           {selectedConversation?.user._id && (
             <>
-              <div className="border-b border-gray1 pl-2 text-sm py-3">
+              <div className="border-b border-box pl-2 text-sm py-3">
                 {selectedConversation.user.fullName}
               </div>
               <div

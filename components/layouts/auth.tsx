@@ -14,7 +14,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col min-h-[100vh]">
       <HeaderAuth />
-      <main className="flex-1 flex justify-center items-center bg-orange">
+      <main className="flex-1 flex justify-center items-center">
         {children}
       </main>
       <Footer />

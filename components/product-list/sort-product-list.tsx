@@ -50,29 +50,11 @@ export function SortProductList({
       },
     });
   };
-  const handlePrevPage = () => {
-    if (+page <= 1) return;
-    router.push({
-      pathname: pathName,
-      query: {
-        ...query,
-        page: +page - 1,
-      },
-    });
-  };
-  const handleNextPage = () => {
-    if (page === total_pages) return;
-    router.push({
-      pathname: pathName,
-      query: {
-        ...query,
-        page: +page + 1,
-      },
-    });
-  };
+
   const { sortBy, order } = query;
+
   return (
-    <div className="lg:px-5 py-3 lg:bg-gray1 text-sm lg:flex  justify-between">
+    <div className="lg:px-5 py-3 text-blue-50 rounded-md dark:border-blue-600 border-grey-200 dark:bg-blue-400 bg-grey-0  lg:border  text-sm lg:flex  justify-between">
       <div className="flex flex-col lg:flex-row gap-y-2  gap-x-3">
         <div className="my-auto">Sắp xếp theo</div>
         {filters.map((item) => (
@@ -81,15 +63,15 @@ export function SortProductList({
               handleSort(item.value);
             }}
             key={item.value}
-            className={`h-8  rounded-sm text-left lg:text-center px-2 lg:px-3 ${
-              item.value === sortBy && "bg-orange text-white"
+            className={`h-8  rounded-md text-left lg:text-center px-2 lg:px-3  ${
+              item.value === sortBy && "bg-blue-200 text-grey-0"
             }`}
           >
             {item.label}
           </button>
         ))}
-        <div className="h-8 parent bg-gray lg:bg-white group  lg:w-[200px] relative after:w-full after:absolute cursor-pointer  after:h-2 after:-bottom-2 flex items-center justify-between">
-          <span className={`ml-2 ${order && "text-orange"}`}>
+        <div className="h-8 parent border border-box  group  lg:w-[200px] relative after:w-full after:absolute cursor-pointer  after:h-2 after:-bottom-2 flex items-center justify-between">
+          <span className={`ml-2 ${order && "text-blue-200"}`}>
             {order === "asc"
               ? " Giá: Thấp đến Cao"
               : order === "desc"
@@ -110,19 +92,19 @@ export function SortProductList({
               d="M19.5 8.25l-7.5 7.5-7.5-7.5"
             />
           </svg>
-          <div className="w-full group-hover:block hidden z-10 bg-gray lg:bg-white absolute top-[108%]">
+          <div className="w-full group-hover:block hidden z-10 bg-box shadow-sm-50 absolute top-[108%]">
             <ul>
               <li
-                className={`p-2 hover:text-orange ${
-                  order === "asc" && " text-orange"
+                className={`p-2 hover:text-blue-200 ${
+                  order === "asc" && " text-blue-200"
                 }`}
                 onClick={() => handleSortPrice("asc")}
               >
                 Giá: Thấp đến Cao
               </li>
               <li
-                className={`p-2 hover:text-orange ${
-                  order === "desc" && " text-orange"
+                className={`p-2 hover:text-blue-200 ${
+                  order === "desc" && " text-blue-200"
                 }`}
                 onClick={() => handleSortPrice("desc")}
               >
@@ -133,12 +115,9 @@ export function SortProductList({
         </div>
       </div>
       <div className="lg:block hidden">
-        <Pagination
-          handleNextPage={handleNextPage}
-          handlePrevPage={handlePrevPage}
-          page={page || 1}
-          total_pages={total_pages || 1}
-        />
+        <Pagination page={page || 1} total_pages={total_pages || 1}>
+          <Pagination.Mini />
+        </Pagination>
       </div>
     </div>
   );

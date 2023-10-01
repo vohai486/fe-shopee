@@ -6,4 +6,7 @@ export interface User {
   avatar: string;
   gender: number;
   date_of_birth: Date;
+  role: string;
+  active: boolean;
+  createdAt: Date;
 }

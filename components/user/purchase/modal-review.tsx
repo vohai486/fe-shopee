@@ -56,16 +56,16 @@ const schema = yup.object().shape({
   ),
 });
 export function ModelReview({
-  onClose,
-  selectOrder,
+  onCloseModal,
+  order,
 }: {
-  onClose: () => void;
-  selectOrder: Order;
+  onCloseModal?: () => void;
+  order: Order;
 }) {
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = useForm<{ reviews: Review[]; ratingShop: number }>({
     shouldFocusError: false,
     defaultValues: {
@@ -80,7 +80,7 @@ export function ModelReview({
   });
   useEffect(() => {
     const products: Review[] = [];
-    selectOrder.order_products.forEach((product) => {
+    order.order_products.forEach((product) => {
       products.push({
         content: "",
         rating: 0,
@@ -89,12 +89,12 @@ export function ModelReview({
       });
     });
     replace(products);
-  }, [replace, selectOrder]);
+  }, [replace, order]);
   const mutationCreateReview = useMutation({
     mutationFn: reviewApi.create,
     onSuccess: () => {
       toast.success("Thêm đánh giá thành công");
-      onClose();
+      onCloseModal?.();
     },
   });
   const handleSubmitForm = async ({ reviews }: { reviews: Review[] }) => {
@@ -122,16 +122,13 @@ export function ModelReview({
   };
 
   return (
-    <ModalPortal>
-      <form
-        onSubmit={handleSubmit(handleSubmitForm)}
-        className="w-[400px] hidden-scroll max-h-[600px] overflow-auto  bg-white px-7 pb-7 rounded-sm shadow-md  modal-content"
-      >
+    <div className="w400:w-[400px] w-[300px] max-h-[600px] overflow-auto hidden-scroll bg-box px-4 w400:px-6">
+      <form onSubmit={handleSubmit(handleSubmitForm)} className="">
         {fields.map((item, idx) => {
           return (
             <div
               key={item.id}
-              className={`pt-5 pb-2 ${idx !== 0 && "border-t  border-gray3"}`}
+              className={`[&:not(:last-child)]:border-b border-box [&:not(:first-child)]:pt-5 `}
             >
               <div className="mb-5">
                 <RatingField name={`reviews.${idx}.rating`} control={control} />
@@ -149,21 +146,21 @@ export function ModelReview({
             </div>
           );
         })}
-        <div className="text-center mt-5">
-          <button
-            onClick={onClose}
-            className="w-1/2  bg-white h-10 text-orange"
-          >
-            Trở về
-          </button>
+        <div className="flex gap-x-2 mt-5">
+          <Button
+            label="Trở về"
+            type="reset"
+            onClick={() => onCloseModal?.()}
+            className="w-1/2  h-10 border rounded-md border-box text-title"
+          />
           <Button
             type="submit"
             label="Gửi đánh giá"
-            className="w-1/2  bg-orange h-10 text-white"
-            isLoading={isSubmitting}
+            className="w-1/2 text-grey-0 rounded-md bg-blue-200 h-10 "
+            isLoading={mutationCreateReview.isLoading}
           />
         </div>
       </form>
-    </ModalPortal>
+    </div>
   );
 }

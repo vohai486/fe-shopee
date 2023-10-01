@@ -56,6 +56,7 @@ export function AsideFilter({
     },
     resolver: yupResolver(schema as any),
     mode: "onChange",
+    shouldFocusError: false,
   });
   const handleFilterPrice = (values: {
     minPrice: string;
@@ -74,18 +75,15 @@ export function AsideFilter({
   };
 
   return (
-    <div>
-      <Link
-        href="/"
-        className="flex capitalize border-bottom font-bold gap-2 mb-2 items-center py-2"
-      >
+    <>
+      <div className="flex capitalize border-bottom  border-box font-bold gap-2 items-center py-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-5 h-5"
+          className="w-6 h-6"
         >
           <path
             strokeLinecap="round"
@@ -94,8 +92,8 @@ export function AsideFilter({
           />
         </svg>
         Tất cả danh mục
-      </Link>
-      <ul className="text-sm py-2">
+      </div>
+      <ul className="text-sm">
         {listCategory &&
           listCategory.map((category) => (
             <li key={category._id}>
@@ -104,8 +102,8 @@ export function AsideFilter({
                   pathname: pathName,
                   query: { ...query, category: category._id },
                 }}
-                className={`flex relative py-2 px-3 ${
-                  category._id === query.category && "text-orange font-bold "
+                className={`flex relative py-2 px-3 font-semibold ${
+                  category._id === query.category && "text-blue-200 "
                 } `}
               >
                 <svg
@@ -127,10 +125,7 @@ export function AsideFilter({
             </li>
           ))}
       </ul>
-      <Link
-        href="/"
-        className="flex capitalize font-bold gap-2 mb-2 items-center py-2 border-bottom"
-      >
+      <div className="flex capitalize font-bold gap-2 items-center py-2 border-bottom border-box">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -146,32 +141,49 @@ export function AsideFilter({
           />
         </svg>
         Bộ lọc tìm kiếm
-      </Link>
-      <div className="py-4 text-sm border-bottom">
-        <div className="mb-4">Khoảng Giá</div>
+      </div>
+      <div className="py-2">
+        <div className="mb-3 text-sm">Khoảng Giá</div>
         <form onSubmit={handleSubmit(handleFilterPrice)}>
           <div className="flex items-center ">
             <InputNumberField
               value={query.minPrice}
               control={control}
               name="minPrice"
+              hideError={true}
             ></InputNumberField>
-            <div className="mx-2 flex-shrink-0">-</div>
+            <div className="mx-1 flex-shrink-0">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M18 12H6"
+                />
+              </svg>
+            </div>
             <InputNumberField
               control={control}
+              hideError={true}
               name="maxPrice"
               value={query.maxPrice}
             ></InputNumberField>
           </div>
-          <div className="text-sm text-red1 flex justify-center min-h-[1.25rem]">
+          <div className="text-sm flex justify-center min-h-[1.25rem]">
             {Object.keys(errors).length > 0 && Object.values(errors)[0].message}
           </div>
-          <button className="w-full h-8 opacity-90 rounded-sm bg-orange text-white capitalize">
+          <button className="w-full h-8 rounded-md text-sm btn-blue-200 capitalize">
             Áp dụng
           </button>
         </form>
       </div>
       <RatingStars nameRating={nameRating} query={query} pathName={pathName} />
-    </div>
+    </>
   );
 }

@@ -13,6 +13,15 @@ const nextConfig = {
       "firebasestorage.googleapis.com",
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/seller",
+        destination: "/seller/dashboard",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

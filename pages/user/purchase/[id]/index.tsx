@@ -20,32 +20,58 @@ export default function PurchaseDetailPage() {
   if (!order && !isLoading) return null;
   return (
     <div>
+      <div className="text-right mb-4">
+        <Link
+          href="/user/purchase"
+          className="flex justify-end text-blue-200 font-medium"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+            />
+          </svg>
+          <span>Quay lại</span>
+        </Link>
+      </div>
       {order && (
-        <div className="bg-white text-sm">
-          <div className="md:py-5 border-b border-gray3 p-3 md:px-6 uppercase flex sm:flex-row flex-col gap-y-2  justify-between">
+        <div className="bg-box text-sm border md:p-8 p-4 shadow-sm-50 border-box rounded-md">
+          <div className="border-b border-box pb-4 uppercase flex sm:flex-row flex-col gap-y-2  justify-between">
             <span>mã đơn hàng: {order._id}</span>
-            <span className="text-orange">
+            <span className="text-blue-200">
               {getStatusOrder(order.order_status)}
             </span>
           </div>
-          <div className="md:py-5 p-3 md:px-6">
-            <div className="flex items-center justify-between mb-4 md:mb-6">
-              <div className="text-xl ">Địa Chỉ Nhận Hàng</div>
+          <div className="pt-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-lg font-medium text-title">
+                Địa Chỉ Nhận Hàng
+              </div>
               {order.order_isPaid && (
-                <div className="text-red"> Đã thanh toán</div>
+                <div className=" text-red-100"> Đã thanh toán</div>
               )}
             </div>
-            <div className="mb-1">{order.order_shipping.fullName}</div>
-            <div className="text-gray4">
+            <div className="mb-1 font-semibold">
+              {order.order_shipping.fullName}
+            </div>
+            <div className="text-blue-100 ">
               {order.order_shipping.phoneNumber} {" - "}
               {order.order_shipping.street}, {order.order_shipping.ward},{" "}
               {order.order_shipping.district}, {order.order_shipping.city}
             </div>
           </div>
-          <div className="bg-gray1/50 ">
-            <div className="p-3 md:py-3 md:px-6 border-b border-gray3">
-              <div className="flex pb-3 text-xs items-center gap-x-2 border-b border-gray3">
-                <span className="font-bold text-sm">
+          <div className="dark:bg-grey-50-dark/60 mt-2">
+            <div className="py-3 border-b border-box">
+              <div className="flex pb-3 items-center text-xs gap-x-2 border-b border-box">
+                <span className="font-medium text-title text-base">
                   {order.order_shop.shop_name}
                 </span>
                 <ButtonChatShop
@@ -60,17 +86,16 @@ export default function PurchaseDetailPage() {
                   label="Chat"
                 />
                 <Link
-                  className="text-black gap-x-2 font-medium hover:bg-gray1 flex items-center border border-gray3 bg-white py-1 px-2 rounded-sm"
                   href={`/shop/${order.order_shop._id}`}
+                  className=" gap-x-1 hover:bg-opacity-75 flex items-center border border-blue-50 text-black-100 dark:text-grey-0 py-1 px-2 rounded-sm"
                 >
-                  {" "}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="w-4 h-4"
+                    className="w-3 h-3"
                   >
                     <path
                       strokeLinecap="round"
@@ -92,15 +117,18 @@ export default function PurchaseDetailPage() {
                       alt=""
                       width={80}
                       height={80}
+                      className="shrink-0"
                     />
-                    <div className="flex w400:flex-row flex-col justify-between gap-x-5">
+                    <div className="flex w400:flex-row w-full flex-col justify-between gap-x-5">
                       <div>
-                        <p className="text-base line-clamp-2">
+                        <p className="font-medium text-title line-clamp-2">
                           {product.product.product_name}
                         </p>
-                        <span>x {product.quantity}</span>
+                        <span className="text-blue-100 font-semibold">
+                          x {product.quantity}
+                        </span>
                       </div>
-                      <div className="text-orange shrink-0 my-auto">
+                      <div className="text-blue-200 font-semibold shrink-0 my-auto">
                         {formatPriceVND(product.price)}
                       </div>
                     </div>
@@ -108,52 +136,52 @@ export default function PurchaseDetailPage() {
                 ))}
               </div>
             </div>
-            <div className=" px-3 md:px-6 border-b border-gray3">
+            <div className="border-b border-box">
               <div className="flex justify-between sm:justify-end  items-center">
-                <div className="pr-4 sm:w-auto w-1/2 text-xs text-gray2">
+                <div className="pr-4 sm:w-auto w-1/2 text-blue-50">
                   Tổng tiền hàng
                 </div>
-                <div className="sm:w-[200px] w-1/2 sm:border-l border-gray3 py-3  text-right">
+                <div className="sm:w-[200px] font-medium w-1/2 sm:border-l border-box py-3  text-right">
                   {formatPriceVND(order.order_checkout.totalPrice)}
                 </div>
               </div>
             </div>
-            <div className=" px-3 md:px-6 border-b border-gray3">
+            <div className="border-b border-box">
               <div className="flex justify-end sm:justify-end items-center">
-                <div className="pr-4 sm:w-auto w-1/2 text-xs text-gray2">
+                <div className="pr-4 sm:w-auto w-1/2 text-blue-50">
                   Phí vận chuyển
                 </div>
-                <div className="sm:w-[200px] w-1/2 sm:border-l border-gray3 py-3  text-right">
+                <div className="sm:w-[200px] font-medium w-1/2 sm:border-l border-box py-3  text-right">
                   {formatPriceVND(order.order_checkout.feeShip)}
                 </div>
               </div>
             </div>
-            <div className=" px-3 md:px-6 border-b border-gray3">
+            <div className="border-b border-box">
               <div className="flex justify-end sm:justify-end items-center">
-                <div className="pr-4 sm:w-auto w-1/2 text-xs text-gray2">
+                <div className="pr-4 sm:w-auto w-1/2 text-blue-50">
                   Giảm giá
                 </div>
-                <div className="sm:w-[200px] w-1/2 sm:border-l border-gray3 py-3  text-right">
+                <div className="sm:w-[200px] font-medium w-1/2 sm:border-l border-box py-3  text-right">
                   {formatPriceVND(order.order_checkout.totalDiscount)}
                 </div>
               </div>
             </div>
-            <div className=" px-3 md:px-6 border-b border-gray3">
+            <div className="border-b border-box">
               <div className="flex justify-end sm:justify-end items-center">
-                <div className="pr-4 sm:w-auto w-1/2 text-xs text-gray2">
+                <div className="pr-4 sm:w-auto w-1/2 text-blue-50">
                   Thành tiền
                 </div>
-                <div className="w-[200px] sm:border-l border-gray3 py-3 text-2xl text-orange font-medium  text-right">
+                <div className="sm:w-[200px] font-medium w-1/2 sm:border-l border-box py-3  text-right">
                   {formatPriceVND(order.order_checkout.totalCheckout)}
                 </div>
               </div>
             </div>
-            <div className=" px-3 md:px-6 border-b border-gray3">
+            <div className="border-b border-box">
               <div className="flex justify-end sm:justify-end items-center">
-                <div className="pr-4 sm:w-auto w-1/2 text-xs text-gray2">
+                <div className="pr-4 sm:w-auto w-1/2 text-blue-50">
                   Phương thức thanh toán
                 </div>
-                <div className="w-[200px] text-xs sm:border-l border-gray3 py-3  text-right">
+                <div className="sm:w-[200px] font-medium w-1/2 sm:border-l border-box py-3  text-right">
                   {order.order_payment.type === "cod"
                     ? "Thanh toán khi nhận hàng"
                     : "Thanh toán Vnpay"}

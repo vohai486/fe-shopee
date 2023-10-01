@@ -25,7 +25,7 @@ const DateItem = ({
     <div className="relative flex-1 sm:flex-[unset] cursor-pointer" ref={ref}>
       <div
         onClick={() => setShow(true)}
-        className="h-10 w-full sm:w-28 border  border-gray3 cursor-pointer flex items-center justify-between px-4"
+        className="h-10 w-full sm:w-28 border text-blue-700 bg-grey-0 dark:text-grey-300 dark:bg-blue-500 border-box cursor-pointer flex items-center justify-between px-4"
       >
         <span>{checked}</span>
         <svg
@@ -44,7 +44,7 @@ const DateItem = ({
         </svg>
       </div>
       {show && (
-        <div className="absolute z-20 shadow-md px-2 w-full max-h-[100px] overflow-auto bg-white  left-0">
+        <div className="absolute z-20 bg-box  px-2 w-full max-h-[100px] overflow-auto shadow-sm-dark border-box  left-0">
           {array.map((ele) => {
             return (
               <div
@@ -53,8 +53,8 @@ const DateItem = ({
                   setShow(false);
                 }}
                 key={ele.value}
-                className={`hover:text-orange py-1 ${
-                  checked === ele.value && "text-orange"
+                className={`hover:text-blue-200 py-1 ${
+                  checked === ele.value && "text-blue-200"
                 } `}
               >
                 {ele.label}

@@ -7,5 +7,7 @@ export interface Review {
     fullName: string;
   };
   review_rating: number;
+  review_product: string;
   _id: string;
+  review_child: { _id: string; review_content: string }[];
 }

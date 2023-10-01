@@ -33,10 +33,7 @@ export const productApi = {
   },
   getAllProductByAdmin(params: ParsedUrlQuery): Promise<
     SuccessResponseApi<{
-      products: Pick<
-        Product,
-        "createdAt" | "product_name" | "product_thumb" | "_id"
-      >[];
+      products: Product[];
       pagination: Pagination;
     }>
   > {
@@ -49,6 +46,20 @@ export const productApi = {
       },
     });
   },
+  updateProduct({
+    data,
+    id,
+  }: {
+    data: FormData;
+    id: string;
+  }): Promise<SuccessResponseApi<1>> {
+    return axiosClient.patch(`/product/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
   publishProduct(ids: string[]): Promise<SuccessResponseApi<number>> {
     return axiosClient.post(`/product/publish`, { productIds: ids });
   },
@@ -57,5 +68,9 @@ export const productApi = {
   },
   verifyProduct(ids: string[]): Promise<SuccessResponseApi<number>> {
     return axiosClient.post("/product/verify-products", { productIds: ids });
+  },
+
+  unVerifyProduct(ids: string[]): Promise<SuccessResponseApi<number>> {
+    return axiosClient.post("/product/un-verify-products", { productIds: ids });
   },
 };

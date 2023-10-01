@@ -10,13 +10,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <AuthAdmin>
       <LayoutWithChatBox>
-        <div className="flex flex-col min-h-[100vh]">
+        <div className="grid lg:grid-cols-[260px_1fr] grid-rows-[auto_1fr] drawer min-h-[100vh] h-screen">
           <HeaderAdmin />
-          <main className="flex-1">
-            <div className="bg-white fixed w-[220px] h-[100%] py-14 top-0 p-4">
-              <Sidebar />
-            </div>
-            <div className="pl-[240px] py-20 pr-10">{children}</div>
+          <Sidebar />
+          <main className="pt-10 px-12 pb-16 overflow-scroll">
+            <div className="flex gap-8 flex-col w-full">{children}</div>
           </main>
         </div>
       </LayoutWithChatBox>

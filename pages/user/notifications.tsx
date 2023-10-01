@@ -1,29 +1,25 @@
-import { notifyApi } from "@/api-client/notify-api";
 import { UserProfileLayout } from "@/components/layouts";
-import { useAuth, useNotification } from "@/hooks";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNotification } from "@/hooks";
 import Link from "next/link";
-import * as React from "react";
 
 export default function NotificationsPage() {
-  const { profile } = useAuth();
   const { listNotify, handleMarkReadAllNotify, handleMarkReadNotify } =
     useNotification("user");
   return (
-    <div className="text-sm border border-gray1">
-      <div className="text-right bg-white p-2">
+    <div className="text-sm border border-box rounded-md">
+      <div className="text-right border-box border-bottom  bg-box p-2">
         <span
           onClick={handleMarkReadAllNotify}
-          className="hover:text-orange cursor-pointer"
+          className="hover:text-blue-200 text-title cursor-pointer"
         >
-          Đánh dấu Đã đọc tất cả
+          Đánh dấu đã đọc tất cả
         </span>
       </div>
       {listNotify.map((notify) => (
         <Link
           href={`/user/purchase/${notify.noti_options.orderId}`}
-          className={`p-4 cursor-pointer block border-t hover:bg-gray1 border-gray1  ${
-            !notify.noti_isRead ? "bg-gray" : "bg-white"
+          className={`p-4 cursor-pointer block text-black-100 dark:text-grey-300 hover:bg-blue-200 dark:hover:bg-blue-200   ${
+            !notify.noti_isRead ? " bg-box" : "bg-grey-400 dark:bg-blue-600"
           }`}
           key={notify._id}
           onClick={() =>

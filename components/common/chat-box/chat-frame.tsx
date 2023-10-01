@@ -48,7 +48,7 @@ export function ChatFrame() {
     <div className="relavtive">
       <button
         onClick={() => setShowChatBox(true)}
-        className="px-3 py-2  rounded-sm bg-orange text-white flex items-center gap-x-2"
+        className="px-3 py-2  rounded-sm bg-blue-200 text-grey-0 flex items-center gap-x-2"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +68,7 @@ export function ChatFrame() {
       </button>
       {dataConversation?.metadata &&
         dataConversation.metadata.filter((item) => !item.isSeen).length > 0 && (
-          <div className="w-5 h-5 flex items-center justify-center border absolute rounded-full text-sm bg-orange text-white -top-1/4 -right-1">
+          <div className="w-5 h-5 flex items-center justify-center border absolute rounded-full text-sm bg-blue-200 text-grey-0 -top-1/4 -right-1">
             <span>
               {dataConversation.metadata.filter((item) => !item.isSeen).length}
             </span>

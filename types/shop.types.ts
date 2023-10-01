@@ -14,3 +14,11 @@ export interface ShopResponse {
   };
   categories: Category[];
 }
+
+export interface Shop {
+  shop_name: string;
+  shop_status: string;
+  createdAt: Date;
+  shop_avatar: string;
+  _id: string;
+}

@@ -3,8 +3,12 @@ import { productApi as productApiServer, reviewApi } from "@/api-server";
 import { Seo } from "@/components/common";
 import { ButtonChatShop } from "@/components/common/button-chat-shop";
 import { MainLayout } from "@/components/layouts";
-import { AddToCartFrom, ProductRating } from "@/components/product-detail";
-import { Product, ProductSelect, Review } from "@/types";
+import {
+  AddToCartFrom,
+  ProductRating,
+  Review,
+} from "@/components/product-detail";
+import { Product, ProductSelect, Review as ReviewType } from "@/types";
 import { formatPriceVND, generateNameId, getIdFromNameId } from "@/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -14,7 +18,7 @@ import { ParsedUrlQuery } from "querystring";
 import { toast } from "react-toastify";
 type PropsPage = {
   product: Product;
-  reviews: Review[];
+  reviews: ReviewType[];
 };
 
 interface Params extends ParsedUrlQuery {
@@ -22,12 +26,16 @@ interface Params extends ParsedUrlQuery {
 }
 export const getStaticPaths: GetStaticPaths = async () => {
   const res = await productApiServer.getAll({});
-  return {
-    paths: res.metadata.products.map((product: ProductSelect) => ({
-      params: { id: product._id },
-    })),
-    fallback: true,
-  };
+  try {
+    return {
+      paths: res.metadata.products.map((product: ProductSelect) => ({
+        params: { id: product._id },
+      })),
+      fallback: true,
+    };
+  } catch (error) {
+    return { paths: [], fallback: false };
+  }
 };
 export const getStaticProps: GetStaticProps<PropsPage, Params> = async (
   context
@@ -44,7 +52,7 @@ export const getStaticProps: GetStaticProps<PropsPage, Params> = async (
         product: productData.metadata,
         reviews: reviewData.metadata,
       },
-      revalidate: 60,
+      revalidate: 180,
     };
   } catch (error) {
     return {
@@ -90,10 +98,10 @@ export default function ProductDetailPage({ product, reviews }: PropsPage) {
           thumbnailUrl: product.product_thumb,
         }}
       ></Seo>
-      <div className="container text-13px my-5 ">
+      <div className="text-sm">
         <div className="pb-5 hidden md:flex items-center">
-          <Link href="/" className="text-blue">
-            Bách Hóa Online
+          <Link href="/" className="text-blue-200">
+            Trang chủ
           </Link>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +109,7 @@ export default function ProductDetailPage({ product, reviews }: PropsPage) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-4 h-4 stroke-black"
+            className="w-4 h-4"
           >
             <path
               strokeLinecap="round"
@@ -109,13 +117,14 @@ export default function ProductDetailPage({ product, reviews }: PropsPage) {
               d="M8.25 4.5l7.5 7.5-7.5 7.5"
             />
           </svg>
-
-          {product.product_name}
+          <span className="line-clamp-1 text-blue-100">
+            {product.product_name}
+          </span>
         </div>
-        <div className="bg-white shadow-sm">
-          <div className="grid grid-cols-10">
-            <div className="col-span-10 md:col-span-5 lg:col-span-4 p-4">
-              <div className="relative pt-[100%] w-full bg-white">
+        <div className="p-4 md:p-8 shadow-sm-50 border rounded-md bg-box border-box">
+          <div className="grid grid-cols-10 gap-y-3">
+            <div className="col-span-10 md:col-span-5 lg:col-span-4">
+              <div className="relative pt-[100%] w-full ">
                 <div className="absolute top-0 w-full h-full ">
                   <Image
                     src={product.product_thumb}
@@ -133,50 +142,54 @@ export default function ProductDetailPage({ product, reviews }: PropsPage) {
                 </div>
               </div>
             </div>
-            <div className="col-span-10 p-3 md:p-5  md:col-span-5 lg:col-span-6 lg:pt-5 lg:pr-9 lg:pb-0 lg:pl-5 text-sm">
-              <div className="mb-2 text-blue text-xs font-medium">
-                {product.product_brand}
+            <div className="col-span-10 p-0 md:pl-6  md:col-span-5 lg:col-span-6  text-sm">
+              <div className="mb-3 text-xs  ">{product.product_brand}</div>
+              <div className="mb-5 text-xl text-blue-300 dark:text-grey-0 font-medium line-clamp-2">
+                {product.product_name}
               </div>
-              <div className="text-xl font-medium">{product.product_name}</div>
-              <div className="flex mt-2 mb-4 w400:flex-row flex-col gap-y-1">
-                {product.product_ratingsAverage > 0 && (
-                  <div className="flex pr-4 w400:border-r border-r-gray3 items-center gap-x-1 text-gray4">
-                    <span className="text-base border-b font-medium border-b-orange text-orange">
-                      {product.product_ratingsAverage}
-                    </span>
-                    <ProductRating num={product.product_ratingsAverage} />
-                  </div>
-                )}
-                {product.product_reviewCount > 0 && (
-                  <div className="w400:px-4 w400:border-r border-r-gray3">
-                    <span className="text-black mr-2  font-medium border-b border-b-black text-base">
-                      {product.product_reviewCount}
-                    </span>
-                    Đánh Giá
-                  </div>
-                )}
-                {product.product_quantity_sold > 0 && (
-                  <div className="w400:px-4 ">
-                    <span className="text-black mr-2 font-medium border-b border-b-black text-base">
-                      {product.product_quantity_sold}
-                    </span>
-                    Đã Bán
-                  </div>
-                )}
-              </div>
-              <div className="p-1 w400:p-2 sm:px-5 sm:py-4 inline-block mb-6 bg-gray1 rounded-sm">
-                <div className="flex items-center gap-x-3">
+              {(product.product_ratingsAverage > 0 ||
+                product.product_reviewCount > 0 ||
+                product.product_quantity_sold > 0) && (
+                <div className="flex mb-5 w400:flex-row text-blue-50 flex-col gap-y-1 ">
+                  {product.product_ratingsAverage > 0 && (
+                    <div className="flex pr-3 w400:border-r  border-blue-50 items-center gap-x-2  text-gray4">
+                      <span className="text-base border-b font-medium border-yellow-100 text-yellow-100">
+                        {product.product_ratingsAverage}
+                      </span>
+                      <ProductRating num={product.product_ratingsAverage} />
+                    </div>
+                  )}
+                  {product.product_reviewCount > 0 && (
+                    <div className="w400:px-3 w400:border-r  border-blue-50">
+                      <span className="text-blue-200 mr-2  font-medium border-b border-b-blue-50 text-base">
+                        {product.product_reviewCount}
+                      </span>
+                      Đánh Giá
+                    </div>
+                  )}
+                  {product.product_quantity_sold > 0 && (
+                    <div className="w400:px-3">
+                      <span className="text-blue-200 mr-2 font-medium border-b border-b-blue-50 text-base">
+                        {product.product_quantity_sold}
+                      </span>
+                      Đã Bán
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="mb-5 py-2 px-3 bg-grey-200/60 dark:bg-blue-500/60 rounded-md block w400:inline-block">
+                <div className="flex items-center gap-x-2">
                   {product.product_discount > 0 && (
-                    <div className="line-through text-gray4 text-sm sm:text-base">
+                    <div className="line-through text-sm sm:text-base">
                       {formatPriceVND(product.product_originalPrice)}
                     </div>
                   )}
-                  <div className="text-orange text-lg sm:text-3xl ">
+                  <div className="text-blue-200 text-xl sm:text-3xl ">
                     {formatPriceVND(product.product_price)}
                   </div>
-                  <div className="bg-orange sm:px-1 text-white text-xs rounded-sm">
+                  <div className="bg-blue-200 text-center px-1 text-grey-0 text-xs rounded-sm">
                     {product.product_discount > 0 &&
-                      `${product.product_discount}% giảm`}
+                      `giảm ${product.product_discount}%`}
                   </div>
                 </div>
               </div>
@@ -187,21 +200,21 @@ export default function ProductDetailPage({ product, reviews }: PropsPage) {
             </div>
           </div>
         </div>
-        <div className="mt-4">
-          <div className="bg-white p-4 lg:p-6">
-            <div className="flex flex-col md:flex-row md:items-center gap-y-4">
-              <div className="flex w400:flex-row flex-col gap-y-2 items-center shrink-0 gap-x-3 md:pr-6 md:border-r border-r-gray1">
-                <div className="flex justify-center  shrink-0 overflow-hidden relative ">
-                  <Image
-                    src={product.product_shop.shop_avatar}
-                    alt="prduct"
-                    width={100}
-                    height={100}
-                    className="border border-gray1 bg-white w-20 h-20 object-cover rounded-full"
-                  />
-                </div>
-                <div className="flex flex-col grow items-center w400:items-stretch">
-                  <h3 className="text-base mb-2 w400:mb-4">
+        <div className="mt-4 p-4 md:p-8 bg-box border-box rounded-md  shadow-sm-50 border">
+          <div className="flex flex-col md:flex-row md:items-center  gap-y-4">
+            <div className="flex w400:flex-row flex-col gap-y-2 items-center shrink-0 gap-x-3 ">
+              <div className="flex justify-center  shrink-0 overflow-hidden relative ">
+                <Image
+                  src={product.product_shop.shop_avatar}
+                  alt="prduct"
+                  width={100}
+                  height={100}
+                  className="border border-box bg-box  w-20 h-20 object-cover rounded-full"
+                />
+              </div>
+              <div className="flex flex-col items-center w400:items-stretch">
+                <div className="flex sm:flex-row flex-col sm:mb-6 mb-4 w400:items-stretch items-center sm:items-center gap-x-5 gap-y-1">
+                  <h3 className="text-base text-blue-300 dark:text-grey-0">
                     {product.product_shop.shop_name}
                   </h3>
                   <div className="flex gap-x-2">
@@ -218,7 +231,7 @@ export default function ProductDetailPage({ product, reviews }: PropsPage) {
                     />
                     <Link
                       href={`/shop/${product.product_shop._id}`}
-                      className="text-black gap-x-2 font-medium hover:bg-gray1 flex items-center border border-gray3 bg-white py-1 px-2 rounded-sm"
+                      className=" gap-x-2 font-medium hover:opacity-75 flex items-center border text-blue-500 dark:text-grey-0 border-blue-50    py-1 px-2 rounded-sm"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -238,127 +251,76 @@ export default function ProductDetailPage({ product, reviews }: PropsPage) {
                     </Link>
                   </div>
                 </div>
-              </div>
-              <div className="flex gap-x-4 justify-center w400:justify-normal  md:w-full md:pl-6 text-gray4   md:justify-between text-sm text-medium">
-                <div>Đánh Giá</div>
-                <div className="text-orange ">
-                  {product.product_shop.shop_ratingsAverage}
-                </div>
-
-                <div>|</div>
-                <div>Người Theo Dõi</div>
-                <div className="text-orange ">
-                  {product.product_shop.shop_followers}
+                <div className="text-blue-50">
+                  Người Theo Dõi:{" "}
+                  <strong className="text-blue-200">
+                    {product.product_shop.shop_followers}
+                  </strong>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-4">
-          <div className="p-2 md:p-6 bg-white">
-            <div className="p-3   bg-gray text-black uppercase text-lg font-medium">
-              chi tiết sản phẩm
-            </div>
-            <div className="md:p-3 px-1 pt-4 md:pt-7">
-              <div className="flex flex-col gap-y-5">
-                {product?.product_specifications &&
-                  product.product_specifications.map((item) => (
-                    <div key={item.key} className="flex text-sm gap-x-2">
-                      <span className="text-gray4 w-[120px] shrink-0">
-                        {item.key}
-                      </span>
-                      <div className="grow">{item.value}</div>
+        <div className="mt-4 p-4  md:p-8  border rounded-md bg-box border-box shadow-sm-50">
+          <div className="p-3 text-blue-300 dark:text-grey-0 rounded-md md:mb-7 mb-4 bg-grey-200/60 dark:bg-blue-500/60 uppercase text-lg font-medium">
+            chi tiết sản phẩm
+          </div>
+          <div className="md:p-3 pl-1">
+            <div className="flex flex-col gap-y-5">
+              {product?.product_specifications &&
+                product.product_specifications.map((item) => (
+                  <div key={item.key} className="flex text-sm gap-x-2">
+                    <span className="text-blue-50 w-[120px] shrink-0">
+                      {item.key}
+                    </span>
+                    <div className="grow text-blue-700 dark:text-grey-300">
+                      {item.value}
                     </div>
-                  ))}
-              </div>
-            </div>
-            <div className="p-3   mt-5 bg-gray text-black uppercase text-lg font-medium">
-              mô tả sản phẩm
-            </div>
-            <div className="md:p-3 px-1 pt-4 md:pt-7 text-sm">
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: product.product_description,
-                }}
-              ></div>
+                  </div>
+                ))}
             </div>
           </div>
+          <div className="p-3 text-blue-300 dark:text-grey-0 rounded-md md:mb-7 mb-4 mt-5 bg-grey-200/60 dark:bg-blue-500/60 uppercase text-lg font-medium">
+            mô tả sản phẩm
+          </div>
+          <div className="md:p-3 pl-1 text-sm">
+            <div
+              dangerouslySetInnerHTML={{
+                __html: product.product_description,
+              }}
+            ></div>
+          </div>
         </div>
-        <div className="mt-4">
-          <div className=" sm:p-6 py-3  md:px-6 px-2 bg-white">
-            <div className="pb-4 px-3 border-gray3 border-b  sm:items-center justify-between ">
-              <p className="text-black uppercase text-lg font-medium mb-2">
-                đánh giá sản phẩm
-              </p>
-              {product.product_ratingsAverage > 0 && (
-                <div className="flex items-center gap-x-5">
-                  <div className="text-orange text-lg font-medium">
-                    <strong className="text-3xl font-medium">
-                      {product.product_ratingsAverage}
-                    </strong>{" "}
-                    / 5
-                  </div>
-                  <ProductRating
-                    num={product.product_ratingsAverage}
-                  ></ProductRating>
-                </div>
-              )}
+        <div className="mt-4 p-4 md:p-8 border rounded-md bg-box border-box shadow-sm-50">
+          <div className="border-b border-box pb-2 sm:items-center justify-between ">
+            <div className="text-blue-300 dark:text-grey-0 p-3 rounded-md mb-2 dark:bg-grey-100-dark bg-grey-200/60 dark:bg-blue-500/60  uppercase text-lg font-medium">
+              đánh giá sản phẩm
             </div>
-            <div>
-              {reviews.map((review, idx) => (
-                <div
-                  key={review._id}
-                  className={`p-3 ${idx !== 0 && "border-t border-gray3"}`}
-                >
-                  <div className="flex items-start gap-x-3">
-                    <div className="w-10 h-10 shrink-0 overflow-hidden rounded-full bg-white">
-                      {review.review_user.avatar && (
-                        <Image
-                          src={review.review_user.avatar}
-                          width={40}
-                          height={40}
-                          alt=""
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <p>{review.review_user.fullName}</p>
-                      <ProductRating num={review.review_rating}></ProductRating>
-                    </div>
-                  </div>
-                  <div className="w-full overflow-x-auto sm:pl-12">
-                    <div className="mt-3">{review.review_content}</div>
-                    <div className="w-full">
-                      {review.review_images.length > 0 && (
-                        <div className="flex  mt-3 whitespace-nowrap  overflow-x-auto hidden-scroll">
-                          {review.review_images.map((image) => (
-                            <div
-                              key={image}
-                              className="shadow border mr-2 border-gray3 min-w-[80px] h-20 inline-block"
-                            >
-                              <Image
-                                width={100}
-                                height={100}
-                                alt=""
-                                src={image}
-                                className="w-full h-full object-cover"
-                              ></Image>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+            {product.product_ratingsAverage > 0 && (
+              <div className="flex pl-3 items-center gap-x-5">
+                <div className="text-blue-200 text-lg font-medium">
+                  <strong className="text-3xl font-medium">
+                    {product.product_ratingsAverage}
+                  </strong>{" "}
+                  / 5
                 </div>
-              ))}
-            </div>
-            <div>
-              {reviews.length === 0 && (
-                <div className="bg-red/5 border border-gray1 p-4 text-sm">
-                  Sản phẩm chưa có đánh giá nào
-                </div>
-              )}
-            </div>
+                <ProductRating
+                  num={product.product_ratingsAverage}
+                ></ProductRating>
+              </div>
+            )}
+          </div>
+          <div>
+            {reviews.map((review, idx) => (
+              <Review review={review} key={review._id}></Review>
+            ))}
+          </div>
+          <div>
+            {reviews.length === 0 && (
+              <div className="rounded-md border border-red-200 dark:text-grey-100 text-blue-50 p-4 text-sm">
+                Sản phẩm chưa có đánh giá nào
+              </div>
+            )}
           </div>
         </div>
       </div>

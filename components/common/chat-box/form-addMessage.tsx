@@ -25,7 +25,7 @@ export function FormAddMessage() {
     mode: "onChange",
     resolver: yupResolver(schema),
   });
-  const handleTyping = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTyping = () => {
     if (socket) {
       socket.emit("typing", selectedConversation?._id);
     }
@@ -51,15 +51,16 @@ export function FormAddMessage() {
   return (
     <form
       onSubmit={handleSubmit(handleSendMessage)}
-      className="border-t border-gray1"
+      className="border-t border-box"
     >
       <TextareaField
-        className="text-sm w-full p-2 resize-none outline-none"
+        className="text-sm w-full p-2 border border-transparent  dark:border-transparent bg-transparent dark:bg-transparent resize-none outline-none"
         classTextError="hidden"
         control={control}
         name="content"
         onChange={handleTyping}
         onKeyDown={handleKeyDown}
+        placeholder="Nhập nội dung"
       />
 
       <div className="flex justify-between px-2 pb-3">
@@ -70,7 +71,7 @@ export function FormAddMessage() {
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
-              className="w-5 h-5 stroke-gray4"
+              className="w-5 h-5 stroke-blue-50"
             >
               <path
                 strokeLinecap="round"
@@ -84,7 +85,7 @@ export function FormAddMessage() {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              className="w-5 h-5 stroke-gray4"
+              className="w-5 h-5 stroke-blue-50"
             >
               <path
                 strokeLinecap="round"
@@ -99,7 +100,7 @@ export function FormAddMessage() {
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
-              className="w-5 h-5 stroke-gray4"
+              className="w-5 h-5 stroke-blue-50"
             >
               <path
                 strokeLinecap="round"
@@ -114,7 +115,7 @@ export function FormAddMessage() {
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
-              className="w-5 h-5 stroke-gray4"
+              className="w-5 h-5 stroke-blue-50"
             >
               <path
                 strokeLinecap="round"
@@ -130,7 +131,7 @@ export function FormAddMessage() {
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
-            className="w-5 h-5 stroke-blue"
+            className="w-5 h-5 stroke-blue-200"
           >
             <path
               strokeLinecap="round"

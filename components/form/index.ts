@@ -1,6 +1,6 @@
 export * from "./input-field";
 export * from "./input-number-field";
-export * from "./quantity-field";
+export * from "../product-detail/quantity-field";
 export * from "./date-field";
 export * from "../cart/quantity-controller";
 export * from "./radio-field";
@@ -11,3 +11,4 @@ export * from "./textarea-field";
 export * from "./address-field";
 export * from "./input-date-field";
 export * from "./rating-field";
+export * from "./photo-field";

@@ -1,15 +1,14 @@
 import { checkoutApi } from "@/api-client";
+import { ConfirmModal, Modal } from "@/components/common";
 import { ButtonChatShop } from "@/components/common/button-chat-shop";
 import { UserProfileLayout } from "@/components/layouts";
 import { ModelReview } from "@/components/user";
 import { STATUS_ORDER } from "@/constants";
-import { Order } from "@/types";
 import { formatPriceVND, generateTitleByOrderStatus } from "@/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 const options = [
   {
@@ -39,13 +38,10 @@ const options = [
 ];
 export default function PurchasePage() {
   const router = useRouter();
-  const [selectOrder, setSelectOrder] = useState<Order | null>(null);
-  const [showModal, setShowModal] = useState(false);
   const { data, refetch } = useQuery({
     queryKey: ["/purchase", router.query],
     queryFn: () => checkoutApi.getOrdersByUser(router.query),
     keepPreviousData: true,
-    staleTime: 60 * 60 * 1000,
     enabled: router.isReady,
   });
   const cancelMutation = useMutation({
@@ -66,18 +62,9 @@ export default function PurchasePage() {
     });
   };
   return (
-    <>
-      {showModal && selectOrder?._id && (
-        <ModelReview
-          selectOrder={selectOrder}
-          onClose={() => {
-            setShowModal(false);
-            setSelectOrder(null);
-          }}
-        />
-      )}
+    <Modal>
       <div className="w-full">
-        <div className=" flex cursor-pointer custom-scrollbar  bg-white whitespace-nowrap shadow-sm mb-3 overflow-x-scroll">
+        <div className="text-blue-50 flex cursor-pointer hidden-scroll  bg-box border border-box rounded-md whitespace-nowrap shadow-sm mb-3 overflow-x-scroll">
           {options.map((item) => (
             <Link
               key={item.label}
@@ -87,10 +74,11 @@ export default function PurchasePage() {
                   status: item.query,
                 },
               }}
-              className={`py-4 min-w-[160px]  text-center  ${
-                (item.query === router.query.status ||
-                  (!router?.query.status && item.query === "")) &&
-                " text-orange border-b-2 border-orange"
+              className={`py-4 min-w-[160px] border-b-2  text-center  ${
+                item.query === router.query.status ||
+                (!router?.query.status && item.query === "")
+                  ? " text-blue-200 border-blue-200"
+                  : "border-transparent"
               }`}
               onClick={() => handleQueryPurchase(item.query)}
             >
@@ -100,13 +88,18 @@ export default function PurchasePage() {
         </div>
       </div>
 
-      <div className="text-sm max-h-[725px] mt-3 overflow-auto hidden-scroll">
+      <div className="text-sm  mt-3 overflow-auto hidden-scroll">
         {data?.metadata.map((order) => (
-          <div key={order._id} className="mb-3">
-            <div className="sm:p-6 p-3 pb-3 bg-white">
-              <div className="flex pb-3 justify-between  md:flex-row flex-col gap-y-2">
+          <div
+            key={order._id}
+            className="mb-3 bg-box rounded-md border border-box"
+          >
+            <div className="md:px-8 p-4 border-b border-box shadow-sm-50">
+              <div className="flex pb-3 justify-between md:flex-row flex-col gap-y-2">
                 <div className="flex items-center gap-x-2">
-                  <div className="font-bold">{order.order_shop.shop_name}</div>
+                  <div className="font-medium text-title">
+                    {order.order_shop.shop_name}
+                  </div>
                   <div className="flex text-xs gap-x-2">
                     <ButtonChatShop
                       conversation={{
@@ -121,7 +114,7 @@ export default function PurchasePage() {
                     />
                     <Link
                       href={`/shop/${order.order_shop._id}`}
-                      className="text-black gap-x-1 font-medium hover:bg-gray1 flex items-center border border-gray3 bg-white py-1 px-2 rounded-sm"
+                      className=" gap-x-1 hover:bg-opacity-75 flex items-center border border-blue-50 text-black-100 dark:text-grey-0 py-1 px-2 rounded-sm"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -141,12 +134,12 @@ export default function PurchasePage() {
                     </Link>
                   </div>
                 </div>
-                <div className="flex flex-wrap">
+                <div className="flex flex-wrap text-blue-100">
                   <div>
                     {generateTitleByOrderStatus(order.order_status).title}
                   </div>{" "}
                   <span className="mx-2">|</span>
-                  <div className="uppercase text-orange">
+                  <div className="uppercase text-brand-600">
                     {generateTitleByOrderStatus(order.order_status).label}
                   </div>
                 </div>
@@ -154,7 +147,7 @@ export default function PurchasePage() {
               {order.order_products.map((item) => (
                 <Link
                   href={`/user/purchase/${order._id}`}
-                  className="py-3 border-t border-gray1 flex gap-x-3"
+                  className="py-3 border-t border-box flex gap-x-3"
                   key={item.product._id}
                 >
                   <Image
@@ -162,59 +155,60 @@ export default function PurchasePage() {
                     width={80}
                     height={80}
                     alt=""
+                    className="shrink-0"
                   />
-                  <div className="flex flex-col sm:flex-row grow justify-between">
-                    <div className="grow flex gap-x-2 flex-row sm:flex-col justify-between">
-                      <p className="line-clamp-2">
-                        {item.product.product_name}
-                      </p>
-                      <div className="shrink-0">x{item.quantity}</div>
-                    </div>
-                    <div className="my-auto">{formatPriceVND(item.price)}</div>
+                  <div className="flex flex-col grow justify-between">
+                    <p className="line-clamp-2">{item.product.product_name}</p>
+                    <div>x{item.quantity}</div>
+                    <div>{formatPriceVND(item.price)}</div>
                   </div>
                 </Link>
               ))}
             </div>
-            <div className="bg-orange/5 p-3 sm:p-6">
-              <div className="text-right mb-6">
+            <div className="bg-box bg-opacity-50 md:px-8 p-4">
+              <div className="text-right mb-3">
                 Thành tiền:{" "}
-                <span className="text-orange text-lg sm:text-2xl">
+                <span className="text-blue-200 text-lg sm:text-2xl">
                   {formatPriceVND(order.order_checkout.totalCheckout)}
                 </span>
               </div>
               <div className="flex justify-end gap-x-2">
                 {order.order_status === STATUS_ORDER.DELIVERED && (
-                  <button
-                    onClick={() => {
-                      setSelectOrder(order);
-                      setShowModal(true);
-                    }}
-                    className="text-white rounded-md h-10 w-[150px] bg-orange hover:bg-orange/80"
-                  >
-                    Đánh Giá
-                  </button>
+                  <Modal.Open opens={order._id}>
+                    <button className="text-grey-0 rounded-md h-10 w-[150px] bg-blue-200 hover:bg-opacity-75">
+                      Đánh Giá
+                    </button>
+                  </Modal.Open>
                 )}
+                <Modal.Window name={order._id}>
+                  <ModelReview order={order} />
+                </Modal.Window>
                 {order.order_status === STATUS_ORDER.PENDING && (
-                  <button
-                    onClick={() => handleCancelOrder(order._id)}
-                    className="text-white rounded-md h-10 w-[150px] bg-red hover:bg-red/80"
-                  >
-                    Hủy đơn
-                  </button>
+                  <Modal.Open opens={`del-${order._id}`}>
+                    <button
+                      // onClick={() => handleCancelOrder(order._id)}
+                      className="text-brand-50 rounded-md h-10 w-[150px] bg-red-200 text-grey-0 font-semibold hover:bg-opacity-75"
+                    >
+                      Hủy đơn
+                    </button>
+                  </Modal.Open>
                 )}
-
-                <button className=" rounded-md h-10 w-[150px] bg-gray3  border-gray hover:bg-gray">
+                <Modal.Window name={`del-${order._id}`}>
+                  <ConfirmModal
+                    onConfirm={() => handleCancelOrder(order._id)}
+                    label="Xác nhận hủy đơn hàng"
+                    isLoading={cancelMutation.isLoading}
+                  />
+                </Modal.Window>
+                <button className=" rounded-md h-10 w-[150px] border-blue-200 border hover:bg-blue-200 hover:text-grey-0 font-semibold text-black-100 dark:text-grey-0 hover:bg-opacity-75">
                   Liên hệ Người Bán
                 </button>
-                {/* <button className=" rounded-md h-10 w-[150px] bg-white border-gray1 hover:bg-gray">
-                  Mua Lại
-                </button> */}
               </div>
             </div>
           </div>
         ))}
       </div>
-    </>
+    </Modal>
   );
 }
 PurchasePage.Layout = UserProfileLayout;

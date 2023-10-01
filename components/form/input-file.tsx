@@ -9,6 +9,7 @@ export interface InputFileProps {
   setError: UseFormSetError<any>;
   children: ReactElement;
   position?: string;
+  showError?: boolean;
 }
 
 export function InputFile({
@@ -18,6 +19,7 @@ export function InputFile({
   setError,
   children,
   position = "text-center",
+  showError = true,
 }: InputFileProps) {
   const {
     field: { onChange, onBlur, value, ref },
@@ -52,7 +54,9 @@ export function InputFile({
         accept="image/*"
       />
       <div onClick={handleClick}>{children}</div>
-      <div className="h-5 text-red1 ">{error && error.message}</div>
+      {showError && (
+        <div className="h-5 text-red1 ">{error && error.message}</div>
+      )}
     </div>
   );
 }

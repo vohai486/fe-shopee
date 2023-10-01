@@ -4,8 +4,8 @@ export interface IProductRatingProps {}
 
 export function ProductRating({
   num,
-  activeClass = "w-4 h-4 fill-orange",
-  nonActiveClass = "w-4 h-4 stroke-orange fill-white",
+  activeClass = "w-4 h-4 fill-yellow-100",
+  nonActiveClass = "w-4 h-4 stroke-yellow-100 fill-grey-0",
 }: {
   num: number;
   activeClass?: string;

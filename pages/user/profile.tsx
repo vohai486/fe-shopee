@@ -39,7 +39,7 @@ export default function ProfilePage() {
   });
   const [file, setFile] = useState<File>();
   const { data, refetch } = useQuery({
-    queryKey: ["/profile"],
+    queryKey: ["profile"],
     queryFn: () => {
       return userApi.getProfile();
     },
@@ -97,24 +97,23 @@ export default function ProfilePage() {
       await updateUserMutation.mutateAsync(values);
       refetch();
     } catch (error) {
-      console.log(error);
+      console.log("error", error);
     }
   };
   const handleChangeFile = (file: File) => {
     setFile(file);
   };
   return (
-    <div className="pt-0 px-2 lg:px-7 text-sm pb-3 bg-white border border-gray1 rounded-sm">
-      <div className="py-4 text-center lg:text-left border-b border-gray1">
-        <h1 className="text-lg font-medium">Hồ Sơ Của Tôi</h1>
-        <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
-      </div>
+    <div className="md:p-8 p-4 text-sm  border border-box bg-box shadow-sm-50 rounded-md">
+      <h1 className=" pb-4 text-center lg:text-left border-b border-box text-lg font-medium text-title">
+        Hồ Sơ Của Tôi
+      </h1>
       <form
         onSubmit={handleSubmit(handleUpdateUser)}
-        className="pt-7 flex flex-col lg:flex-row items-start "
+        className="lg:pt-7 pt-4 flex flex-col lg:flex-row items-start "
       >
         <div className="grow w-full order-2 lg:order-1 grid grid-cols-4 gap-y-7 gap-x-2 md:gap-x-5">
-          <div className="col-span-1 text-right text-gray4  pt-2">Họ Tên</div>
+          <div className="col-span-1 text-right  pt-2">Họ Tên</div>
           <div className="col-span-3">
             <InputField
               classParent="w-full sm:w-4/5"
@@ -123,7 +122,7 @@ export default function ProfilePage() {
               name="fullName"
             />
           </div>
-          <div className="col-span-1 text-right text-gray4 pt-2">Email</div>
+          <div className="col-span-1 text-right pt-2">Email</div>
           <div className="col-span-3">
             <InputField
               classParent="w-full sm:w-4/5"
@@ -133,9 +132,7 @@ export default function ProfilePage() {
               disabled={true}
             />
           </div>
-          <div className="col-span-1 text-right text-gray4  my-auto">
-            Số điện thoại
-          </div>
+          <div className="col-span-1 text-right  my-auto">Số điện thoại</div>
           <div className="col-span-3">
             <InputField
               classParent="w-full sm:w-4/5"
@@ -144,9 +141,7 @@ export default function ProfilePage() {
               name="phoneNumber"
             />
           </div>
-          <div className="col-span-1 text-right text-gray4  my-auto">
-            Giới tính
-          </div>
+          <div className="col-span-1 text-right  my-auto">Giới tính</div>
           <div className="col-span-3">
             <RadioField
               arrayOptions={arrayOptions}
@@ -154,22 +149,20 @@ export default function ProfilePage() {
               name="gender"
             />
           </div>
-          <div className="col-span-1 text-right text-gray4  sm:my-auto">
-            Ngày sinh
-          </div>
+          <div className="col-span-1 text-right  sm:my-auto">Ngày sinh</div>
           <div className="col-span-3">
             <DateField control={control} name="date_of_birth" />
           </div>
           <div className="col-span-1"></div>
-          <div className="col-span-3 mb-7">
-            <button className="text-white bg-orange h-10 w-20 rounded-sm">
+          <div className="col-span-3">
+            <button className=" bg-blue-200 rounded-md text-grey-0 h-10 w-20 ">
               Lưu
             </button>
           </div>
         </div>
-        <div className="lg:w-72 w-full order-1 lg:order-2 lg:border-l border-gray flex justify-center">
+        <div className="lg:w-72 w-full order-1 lg:order-2 lg:border-l border-box flex justify-center">
           <div className="flex flex-col items-center">
-            <div className="w-[100px] my-5 h-[100px] overflow-hidden flex items-center justify-center rounded-full border-gray4 bg-gray">
+            <div className="w-[100px] my-5 h-[100px] overflow-hidden flex items-center justify-center rounded-full border border-box bg-box">
               {filePreview || data?.metadata.avatar ? (
                 <Image
                   width={100}
@@ -186,8 +179,7 @@ export default function ProfilePage() {
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-12 h-12 stroke-gray4"
+                  className="w-12 h-12 stroke-current"
                 >
                   <path
                     strokeLinecap="round"
@@ -203,7 +195,10 @@ export default function ProfilePage() {
               name="image"
               handleChangeFile={handleChangeFile}
             >
-              <button type="button" className="border border-gray1 h-10 w-28">
+              <button
+                type="button"
+                className="border text-title border-box shadow-md h-10 w-28 rounded-md "
+              >
                 Chọn Ảnh
               </button>
             </InputFile>

@@ -17,7 +17,7 @@ export function InputNumberField<T extends FieldValues>({
   onChange: externalOnChange,
   onBlur: externalOnBlur,
   value: externalValue,
-  className = "p-1  shadow-lg",
+  className = "p-1",
   hideError = false,
   classNameParent = "",
   ...rest
@@ -39,15 +39,28 @@ export function InputNumberField<T extends FieldValues>({
         ref={ref}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           onChange(e);
+          if (e.target.value === "") {
+            e.target.value = "0";
+            onChange(e);
+            externalOnChange && externalOnChange(e);
+            return;
+          }
+          if (e.target.value.length > 1 && e.target.value.charAt(0) === "0") {
+            e.target.value = e.target.value.slice(1);
+            onChange(e);
+            externalOnChange && externalOnChange(e);
+            return;
+          }
+          onChange(e);
           externalOnChange && externalOnChange(e);
         }}
-        className={`bg-white rounded-sm border border-gray3 focus:border-orange outline-none  w-full  ${className}  ${
-          error && "border-red1"
+        className={` rounded-md border  w-full  ${className}  ${
+          error && "error"
         }`}
         {...rest}
       ></input>
-      {hideError && (
-        <div className="absolute -bottom-1/2 text-red1">
+      {!hideError && (
+        <div className="absolute -bottom-1/2 text-red-200">
           {error && error?.message}
         </div>
       )}

@@ -2,6 +2,8 @@ import { userApi } from "@/api-client";
 import { cartApi } from "@/api-client/cart-api";
 import { CartItem } from "@/components/cart";
 import { Loading } from "@/components/common";
+import { Checkbox } from "@/components/common/checkbox";
+import Table from "@/components/common/table";
 import { ProtectedLayout } from "@/components/layouts";
 import { AppContext } from "@/contexts/app.context";
 import { collectListByShop, formatPriceVND } from "@/utils";
@@ -173,17 +175,17 @@ export default function CartPage() {
     });
   };
 
-  if (data?.metadata && data.metadata?.cart_products.length === 0) {
+  if (!data || (data?.metadata && data.metadata?.cart_products.length === 0)) {
     return (
       <div className="py-5  text-sm">
         <div className="container px-3 xl:px-0">
-          <div className="py-5 bg-white border border-orange bg-orange/5 flex gap-y-3 items-center flex-col">
+          <div className="py-5  border  rounded-md border-box bg-box flex gap-y-3 items-center flex-col">
             <div className="px-2 text-center">
               Không có sản phẩm nào trong giỏ hàng của bạn.
             </div>
             <Link
               href="/"
-              className="bg-orange py-2 rounded-sm px-4 text-white"
+              className="bg-blue-200 py-2 rounded-sm px-4 text-grey-0"
             >
               Tiếp tục mua sắm
             </Link>
@@ -196,104 +198,98 @@ export default function CartPage() {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="py-5 text-sm ">
-      <div className="container relative">
-        <div className="px-5 bg-white hidden  md:grid grid-cols-10 items-center">
-          <div className="col-span-5 flex h-14 items-center">
-            <div className="flex items-center h-5 px-5">
-              <input
-                aria-describedby="helper-checkbox-text"
-                type="checkbox"
-                className="checkbox rounded-sm checkbox-accent w-4 h-4"
-                checked={listItemCart.every((item) => item.checked)}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  handleCheckedAll(e.target.checked);
-                }}
-              />
-            </div>
-            <div className="grow">Sản phẩm</div>
+    <div className="text-sm relative">
+      <Table columns="2rem 4fr 1.25fr 1.75fr 1.25fr 2rem">
+        <Table.Header className="hidden md:grid">
+          <div>
+            <Checkbox
+              id="all"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                handleCheckedAll(e.target.checked);
+              }}
+              checked={listItemCart.every((item) => item.checked)}
+            />
           </div>
-          <div className="col-span-5 flex">
-            <div className="grow text-center w-[30%]">Đơn Giá</div>
-            <div className="grow text-center w-[35%]">Số Lượng</div>
-            <div className="grow text-center w-[20%]">Số Tiền</div>
-            <div className="grow text-center w-[15%] cursor-pointer">Xóa</div>
-          </div>
-        </div>
-        {collectListByShop(listItemCart).map((listProduct, idx) => {
-          return (
-            <div key={listProduct[0]._id}>
+          <div>Sản phẩm</div>
+          <div>Đơn Giá</div>
+          <div>Số Lượng</div>
+          <div>Thành Tiền</div>
+          <div>Xóa</div>
+        </Table.Header>
+        <Table.Body
+          data={collectListByShop(listItemCart)}
+          render={(listProduct) => {
+            return (
               <CartItem
+                key={listProduct[0]._id}
                 listProduct={listProduct}
                 handleChecked={handleChecked}
                 handleCheckedAllShop={handleCheckedAllShop}
                 handleDeleteCart={handleDeleteCart}
                 handleQuantity={handleQuantity}
               />
-            </div>
-          );
-        })}
-        <div className="sticky z-30 bottom-0 py-3 lg:text-base text-sm w-full mt-3 bg-white px-2 sm:px-5">
-          <div className="col-span-5 justify-between flex md:flex-row flex-col gap-y-3 md:items-center">
-            <div className="flex grow justify-between md:justify-normal items-center md:pl-5 h-5 gap-x-5">
-              <div className="flex items-center gap-x-2">
-                <input
-                  aria-describedby="helper-checkbox-text"
-                  type="checkbox"
-                  className="checkbox rounded-sm checkbox-accent w-4 h-4"
-                  checked={listItemCart.every((item) => item.checked)}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    handleCheckedAll(e.target.checked);
-                  }}
-                />
-                <span>Chọn Tất Cả ({listItemCart.length})</span>
-              </div>
-              <div
-                className="cursor-pointer"
-                onClick={() => {
-                  const filterIds = listItemCart.reduce(
-                    (result: string[], item) => {
-                      if (item.checked) {
-                        result.push(item.product._id);
-                      }
-                      return result;
-                    },
-                    []
-                  );
-                  handleDeleteCart(filterIds);
+            );
+          }}
+        ></Table.Body>
+      </Table>
+      <div className="sticky z-30 bottom-0 py-3 text-sm w-full mt-3  border rounded-md border-box bg-box px-4 sm:px-6">
+        <div className="col-span-5 justify-between flex md:flex-row flex-col gap-y-3 md:items-center">
+          <div className="flex grow justify-between md:justify-normal items-center h-5 gap-x-5">
+            <div className="flex items-center gap-3">
+              <Checkbox
+                id="all-cart"
+                checked={listItemCart.every((item) => item.checked)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  handleCheckedAll(e.target.checked);
                 }}
-              >
-                Xóa
-              </div>
+              />
+              <span>Chọn Tất Cả ({listItemCart.length})</span>
             </div>
-            <div className="grow md:mt-0 mt-2 md:justify-end justify-between md:flex-row flex-col gap-y-3 flex  gap-x-5 items-center">
-              <div className="flex gap-x-4 w-full  md:w-[unset] sm:justify-between items-center">
-                <div>
-                  Tổng thanh toán (
-                  {listItemCart.filter((item) => item.checked).length} Sản
-                  phẩm):{" "}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-orange text-lg md:text-2xl">
-                    {formatPriceVND(totalPriceItemChecked - totalDiscount)}
+            <div
+              className="cursor-pointer"
+              onClick={() => {
+                const filterIds = listItemCart.reduce(
+                  (result: string[], item) => {
+                    if (item.checked) {
+                      result.push(item.product._id);
+                    }
+                    return result;
+                  },
+                  []
+                );
+                handleDeleteCart(filterIds);
+              }}
+            >
+              Xóa
+            </div>
+          </div>
+          <div className="grow md:mt-0 mt-2 md:justify-end justify-between md:flex-row flex-col gap-y-3 flex  gap-x-5 items-center">
+            <div className="flex gap-x-4 w-full  md:w-[unset] sm:justify-between items-center">
+              <div>
+                Tổng thanh toán (
+                {listItemCart.filter((item) => item.checked).length} Sản phẩm):{" "}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-blue-200 text-lg md:text-2xl">
+                  {formatPriceVND(totalPriceItemChecked - totalDiscount)}
+                </span>
+                {totalDiscount > 0 && (
+                  <span className="text-blue-200/90 text-sm">
+                    Tiết kiệm: {formatPriceVND(totalDiscount)}
                   </span>
-                  {totalDiscount > 0 && (
-                    <span className="text-orange text-sm">
-                      Tiết kiệm: {formatPriceVND(totalDiscount)}
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
-              <button
-                className={`text-white bg-orange text-sm  py-2 px-4 rounded-sm ${
-                  listItemCart.filter((item) => item.checked).length <= 0 &&
-                  "pointer-events-none bg-opacity-70 "
-                }`}
-                onClick={handleCheckoutReview}
-              >
-                Mua Hàng
-              </button>
             </div>
+            <button
+              className={`text-grey-0 bg-blue-200 text-sm  py-2 px-4 rounded-sm ${
+                listItemCart.filter((item) => item.checked).length <= 0 &&
+                "pointer-events-none"
+              }`}
+              disabled={listItemCart.filter((item) => item.checked).length <= 0}
+              onClick={handleCheckoutReview}
+            >
+              Mua Hàng
+            </button>
           </div>
         </div>
       </div>

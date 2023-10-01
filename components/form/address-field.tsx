@@ -1,20 +1,25 @@
 import { addressApi } from "@/api-client";
 import { useClickOutSide } from "@/hooks";
-import { Address, City, District, Ward } from "@/types";
+import { City, District, Ward } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import React, { useRef, useState } from "react";
-import { Control, UseFormGetValues, UseFormSetValue } from "react-hook-form";
+import { useRef, useState } from "react";
 
 export interface AddressFieldProps {
   error: boolean;
   getValueForm: (name: string) => string | number | boolean | undefined;
   setValueForm: (name: string, value: any) => void;
+  city: string;
+  district: string;
+  ward: string;
 }
 
 export function AddressField({
   error,
   setValueForm,
   getValueForm,
+  city,
+  district,
+  ward,
 }: AddressFieldProps) {
   const [show, setShow] = useState(false);
   const [type, setType] = useState<"city" | "district" | "ward">("city");
@@ -67,30 +72,33 @@ export function AddressField({
       setType("city");
     }
   };
+
   return (
     <div ref={divRef} className="relative h-10">
       <span
-        className={`absolute  z-10 bottom-3/4  bg-white text-gray2 sm:top-[-10px] left-2 ${
-          error && "text-red"
+        className={`absolute line-clamp-1 z-10 bottom-3/4  bg-box sm:top-[-10px] left-2 ${
+          error && "text-red-100 dark:text-red-100"
         }`}
       >
         Tỉnh/ Thành Phố, Quận/Huyện, Phường/Xã
       </span>
       <div
         onClick={() => setShow(true)}
-        className={`absolute inset-0 border border-gray3 px-3 py-2 outline-none rounded-sm focus:border-orange ${
-          error && "border-red focus:border-red"
+        className={`absolute inset-0 border px-3 py-2 outline-none focus:border-blue-200 rounded-md text-blue-700 bg-grey-0 dark:text-grey-300 dark:bg-blue-500 ${
+          error ? "border-red-100 focus:border-red-100" : "border-box "
         }`}
       >
         <p className=" line-clamp-1">
-          {(getValueForm("city") as string) +
-            (getValueForm("district") && ", " + getValueForm("district")) +
-            (getValueForm("ward") && ", " + getValueForm("ward"))}
+          {getValueForm("city")
+            ? (getValueForm("city") as string) +
+              (getValueForm("district") && ", " + getValueForm("district")) +
+              (getValueForm("ward") && ", " + getValueForm("ward"))
+            : city + (district && ", " + district) + (ward && ", " + ward)}
         </p>
       </div>
       {show && (
-        <div className="absolute top-[calc(100%+2px)] border-gray3 rounded-sm border bg-white w-full">
-          <div className="w-full flex justify-between text-gray4 py-4 border-b border-gray3">
+        <div className="absolute z-10 top-[calc(100%+2px)] rounded-sm border border-box bg-box w-full">
+          <div className="w-full flex justify-between text-gray4 py-4 border-b border-box">
             <div
               onClick={() => setType("city")}
               className={`px-3 text-center w-full h-full cursor-pointer ${
@@ -166,7 +174,7 @@ const SelectAddress = <T extends (City | District | Ward)[]>({
             <div
               onClick={() => handleChange(name, +code)}
               key={code}
-              className="px-3 py-2 hover:bg-gray1"
+              className="px-3 py-2 hover:text-blue-200"
             >
               {name}
             </div>

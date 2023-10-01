@@ -83,7 +83,7 @@ export default function FormPortalPage() {
     setValue("address", value);
   };
   return (
-    <div className="bg-white p-14 text-sm shadow-2xl rounded-lg flex items-center justify-center">
+    <div className="bg-box p-14 text-sm shadow-2xl rounded-md flex items-center justify-center">
       {showModal && (
         <FormAddressSeller
           onSetValue={onSetValue}
@@ -92,23 +92,23 @@ export default function FormPortalPage() {
       )}
       <form
         onSubmit={handleSubmit(handleSubmitForm)}
-        className="w-[600px] py-8 grid grid-cols-3 gap-x-4 border-t border-b border-gray3 gap-y-3"
+        className="w-[600px] py-8 grid grid-cols-3 gap-x-4 border-t border-b border-box gap-y-3"
       >
-        <div className="col-span-1 text-right">
-          <span className="text-orange text-xs mr-1 ">*</span>
+        <div className="col-span-1 text-blue-100 text-right">
+          <span className=" text-xs mr-1 ">*</span>
           Tên Shop
         </div>
-        <div className="col-span-2">
+        <div className="col-span-2 ">
           <InputField name="name" control={control} placeholder="Tên Shop" />
         </div>
-        <div className="col-span-1 text-right">
-          <span className="text-orange text-xs mr-1 ">*</span>
+        <div className="col-span-1 text-blue-100 text-right">
+          <span className=" text-xs mr-1 ">*</span>
           Địa chỉ lấy hàng
         </div>
         <div className="col-span-2">
           <button
             type="button"
-            className="border border-gray1 py-2 px-3 rounded-sm"
+            className="border py-2 px-3  text-blue-700 bg-grey-0 dark:text-grey-300 dark:bg-blue-500 border-box  rounded-sm"
             onClick={() => setShowModal(true)}
           >
             + Thêm
@@ -117,15 +117,15 @@ export default function FormPortalPage() {
             {errors["address"] && errors["address"].message}
           </div>
         </div>
-        <div className="col-span-1 text-right">
-          <span className="text-orange text-xs mr-1 ">*</span>
+        <div className="col-span-1 text-blue-100 text-right">
+          <span className="text-xs mr-1 ">*</span>
           Email
         </div>
         <div className="col-span-2">
           <InputField name="email" control={control} disabled={true} />
         </div>
-        <div className="col-span-1 text-right">
-          <span className="text-orange text-xs mr-1 ">*</span>
+        <div className="col-span-1 text-blue-100  text-right">
+          <span className="text-xs mr-1 ">*</span>
           Số điện thoại
         </div>
         <div className="col-span-2">
@@ -134,9 +134,9 @@ export default function FormPortalPage() {
             control={control}
             disabled={true}
           />
-          <div className="text-gray4 mt-2">
+          <div className="text-blue-50 mt-2">
             Đổi số điện thoại tại{" "}
-            <Link className="text-blue" href="/user/profile">
+            <Link className="text-blue-200" href="/user/profile">
               Hồ sơ của tôi
             </Link>
           </div>
@@ -144,7 +144,7 @@ export default function FormPortalPage() {
         <div className="col-span-3 flex justify-end">
           <button
             type="submit"
-            className="px-4 py-2 rounded-sm bg-orange text-white"
+            className="px-4 py-2 rounded-sm bg-blue-200 text-grey-0"
           >
             Đăng ký
           </button>

@@ -29,6 +29,7 @@ export interface Product {
   product_slug: string;
   product_price: number;
   product_quantity_sold: number;
+  verify: boolean;
 }
 
 export interface Pagination {

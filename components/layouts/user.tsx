@@ -10,19 +10,22 @@ export function UserProfileLayout({ children }: { children: ReactNode }) {
       <LayoutWithChatBox>
         <div className="flex flex-col min-h-[100vh]">
           <HeaderDesktop />
-          <main className="flex-1 pb-6">
-            <div className="mt-3 container drawer-content lg:px-[10px] px-0">
+          <main className="flex-1 py-6">
+            <div className="container drawer-content">
               <div className="flex lg:flex-row flex-col">
-                <div className="shrink-0 w-full hidden lg:block lg:w-[200px] lg:pr-5 lg:pl-0 px-2">
+                <div className="shrink-0 w-full hidden  lg:block lg:w-[200px] lg:pr-5 lg:pl-0 px-2">
                   <Sidebar />
                 </div>
-                <div className="w-full  overflow-x-auto">{children}</div>
+                <div className="w-full overflow-x-auto">{children}</div>
               </div>
             </div>
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-side lg:hidden">
-              <label htmlFor="my-drawer" className="drawer-overlay"></label>
-              <div className=" bg-white w-[200px] px-2 h-full">
+              <label
+                htmlFor="my-drawer"
+                className="drawer-overlay bg-backdrop-color dark:bg-backdrop-color-dark"
+              ></label>
+              <div className=" bg-box border-box w-[200px] px-2 h-full">
                 <Sidebar />
               </div>
             </div>
